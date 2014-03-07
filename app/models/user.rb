@@ -5,7 +5,17 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable, :omniauth_providers => [:google_oauth2]
 
   # Setup accessible (or protected) attributes for your model
-  attr_accessible :email, :password, :password_confirmation, :remember_me, :username, :provider, :uid, :avatar
+  attr_accessible :email, :password, :password_confirmation, :remember_me, :username, :provider, :uid, :avatar, :status, :status_changed_at
+
+  IDLE = 0
+  WAITING = 1
+  RUNNING = 2
+
+  STATUS_MAP = {
+    IDLE => "Idle",
+    WAITING => "Waiting",
+    RUNNING => "Running"
+  }
 
   def self.from_omniauth(auth)
     if user = User.find_by_email(auth.info.email)

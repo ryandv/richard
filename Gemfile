@@ -8,6 +8,7 @@ gem 'rails', '3.2.16'
 gem 'sqlite3'
 gem 'devise'
 gem 'omniauth-google-oauth2'
+gem "twitter-bootstrap-rails"
 
 
 # Gems used only for assets and not required

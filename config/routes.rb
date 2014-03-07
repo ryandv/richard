@@ -13,6 +13,8 @@ devise_for :users, controllers: { omniauth_callbacks: "omniauth_callbacks" }
   #   match 'products/:id/purchase' => 'catalog#purchase', :as => :purchase
   # This route can be invoked with purchase_url(:id => product.id)
 
+  match 'start_waiting/:id' => 'users#start_waiting'
+  match 'stop_waiting/:id' => 'users#stop_waiting'
   # Sample resource route (maps HTTP verbs to controller actions automatically):
   #   resources :products
 
@@ -51,7 +53,7 @@ devise_for :users, controllers: { omniauth_callbacks: "omniauth_callbacks" }
 
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
-  root :to => 'home#index'
+  root :to => 'users#index'
 
   # See how all your routes lay out with "rake routes"
 
