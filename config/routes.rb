@@ -15,6 +15,7 @@ devise_for :users, controllers: { omniauth_callbacks: "omniauth_callbacks" }
 
   match 'start_waiting/:id' => 'users#start_waiting'
   match 'stop_waiting/:id' => 'users#stop_waiting'
+  match 'run_gorgon/:id' => 'users#run_gorgon'
   # Sample resource route (maps HTTP verbs to controller actions automatically):
   #   resources :products
 

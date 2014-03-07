@@ -65,19 +65,30 @@
 
     <div class="container-fluid">
       <div class="row-fluid">
+        <% if current_user %>
         <div class="span2">
           <div class="well sidebar-nav">
             <ul class="nav nav-list actions">
               <li class="nav-header">Actions</li>
-                <li>
-                <%= button_to "Start Waiting", {:controller => "users", :action => "start_waiting", :id => current_user.id} , :method=>:post, :class => "btn btn-primary" %>
-                </li>
-                <li>
-                <%= button_to "Stop Waiting", {:controller => "users", :action => "stop_waiting", :id => current_user.id} , :method=>:post, :class => "btn btn-primary" %>
-                </li>
+                <% if current_user.waiting? %>
+                  <% if User.gorgon_free? %>
+                    <li>
+                    <%= button_to "Run Gorgon", {:controller => "users", :action => "run_gorgon", :id => current_user.id} , :method=>:post, :class => "btn btn-primary" %>
+                    </li>
+                  <% end %>
+                  <li>
+                  <%= button_to "Stop Waiting", {:controller => "users", :action => "stop_waiting", :id => current_user.id} , :method=>:post, :class => "btn btn-primary" %>
+                  </li>
+                <% else %>
+                  <li>
+                  <%= button_to "Start Waiting", {:controller => "users", :action => "start_waiting", :id => current_user.id} , :method=>:post, :class => "btn btn-primary" %>
+                  </li>
+                <% end %>
             </ul>
           </div><!--/.well -->
         </div><!--/span-->
+        <% end %>
+
         <div class="span9">
           <%= bootstrap_flash %>
           <%= yield %>

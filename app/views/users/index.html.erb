@@ -1,14 +1,18 @@
-<table class="table table-striped">
-<thead>
-<tr>
-<th>User</th><th>Status</th><th>Status changed at</th>
-</thead>
-<% @users.each do |user| %>
-<tr class="<%= "success" if user.id == current_user.id %>">
-<td><%= user.email %></td>
-<td><%= User::STATUS_MAP[user.status] %></td>
-<td><%= user.status_changed_at %></td>
-</tr>
+<% if current_user %>
+  <table class="table table-striped">
+  <thead>
+  <tr>
+  <th>User</th><th>Status</th><th>Status changed at</th>
+  </thead>
+  <% @users.each do |user| %>
+  <tr class="<%= "success" if user.id == current_user.id %>">
+  <td><%= user.email %></td>
+  <td><%= User::STATUS_MAP[user.status] %></td>
+  <td><%= user.status_changed_at %></td>
+  </tr>
+  <% end %>
+  </thead>
+  </table>
+<% else %>
+  You aren't logged in.
 <% end %>
-</thead>
-</table>

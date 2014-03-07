@@ -7,6 +7,8 @@ class User < ActiveRecord::Base
   # Setup accessible (or protected) attributes for your model
   attr_accessible :email, :password, :password_confirmation, :remember_me, :username, :provider, :uid, :avatar, :status, :status_changed_at
 
+  after_update :update_gorgon_status
+
   IDLE = 0
   WAITING = 1
   RUNNING = 2
@@ -30,5 +32,13 @@ class User < ActiveRecord::Base
         user.password = Devise.friendly_token[0,20]
       end
     end
+  end
+
+  def waiting?
+    self.status == WAITING
+  end
+
+  def self.gorgon_free?
+    User.where(:status => RUNNING).empty?
   end
 end
