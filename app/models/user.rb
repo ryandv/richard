@@ -43,15 +43,24 @@ class User < ActiveRecord::Base
     self.status == RUNNING
   end
 
+  def self.next_user
+    User.where(:status => User::WAITING).order("status_changed_at").first
+  end
+
   def self.gorgon_free?
     User.where(:status => RUNNING).empty?
   end
 
+  def running_too_long?
+    Time.now - self.status_changed_at > 2.minutes
+  end
+
   def validate_transition
      retval = self.changes[:status] == [IDLE, WAITING]\
-       || ( self.changes[:status] == [WAITING, RUNNING] && Gorgon.status == Gorgon::AVAILABLE ) \
+       || ( self.changes[:status] == [WAITING, RUNNING] && Gorgon.status == Gorgon::AVAILABLE ) && self.id == User.next_user.id \
        || self.changes[:status] == [RUNNING, IDLE] || self.changes[:status] == [WAITING, IDLE]
 
+    puts self.changes[:status]
     self.errors.add(:base, "Not a valid transition Mr Nixon") unless retval
      puts self.errors.inspect
     #retval

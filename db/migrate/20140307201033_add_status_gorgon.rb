@@ -1,6 +1,6 @@
 class AddStatusGorgon < ActiveRecord::Migration
   def up
-    Gorgon.create(status: 0)
+    Gorgon.create(status: 1)
   end
 
   def down

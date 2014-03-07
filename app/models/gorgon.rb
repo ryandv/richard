@@ -11,11 +11,15 @@ class Gorgon < ActiveRecord::Base
     Gorgon.all.first.status
   end
 
-  def self.run
-    Gorgon.all.first.update_attributes! status: RUNNING
+  def self.run(user_id)
+    Gorgon.all.first.update_attributes! status: RUNNING, user_id: user_id
   end
 
-  def self.finish
-    Gorgon.all.first.update_attributes! status: AVAILABLE
+  def self.finish(user_id)
+    Gorgon.all.first.update_attributes! status: AVAILABLE, user_id: user_id
+  end
+
+  def self.running_user_id
+    Gorgon.all.first.user_id
   end
 end
