@@ -59,6 +59,7 @@
                 <% end %>
             </ul>
           </div><!--/.nav-collapse -->
+          </div><!--/.nav-collapse -->
         </div>
       </div>
     </div>
@@ -70,6 +71,7 @@
           <div class="well sidebar-nav">
             <ul class="nav nav-list actions">
               <li class="nav-header">Actions</li>
+              Gorgon Status: <%=  Gorgon::MAP[Gorgon.status] %>
                 <% if current_user.waiting? %>
                   <% if User.gorgon_free? %>
                     <li>
@@ -78,6 +80,10 @@
                   <% end %>
                   <li>
                   <%= button_to "Stop Waiting", {:controller => "users", :action => "stop_waiting", :id => current_user.id} , :method=>:post, :class => "btn btn-primary" %>
+                  </li>
+                <% elsif current_user.running? %>
+                  <li>
+                    <%= button_to "Finish", {:controller => "users", :action => "finish_running", :id => current_user.id} , :method=>:post, :class => "btn btn-primary" %>
                   </li>
                 <% else %>
                   <li>

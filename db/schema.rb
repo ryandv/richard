@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140307185632) do
+ActiveRecord::Schema.define(:version => 20140307201033) do
 
   create_table "gorgon", :force => true do |t|
     t.integer "status"

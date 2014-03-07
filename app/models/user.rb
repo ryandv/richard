@@ -7,7 +7,8 @@ class User < ActiveRecord::Base
   # Setup accessible (or protected) attributes for your model
   attr_accessible :email, :password, :password_confirmation, :remember_me, :username, :provider, :uid, :avatar, :status, :status_changed_at
 
-  after_update :update_gorgon_status
+  validate :validate_transition, on: :update
+
 
   IDLE = 0
   WAITING = 1
@@ -38,7 +39,21 @@ class User < ActiveRecord::Base
     self.status == WAITING
   end
 
+  def running?
+    self.status == RUNNING
+  end
+
   def self.gorgon_free?
     User.where(:status => RUNNING).empty?
+  end
+
+  def validate_transition
+     retval = self.changes[:status] == [IDLE, WAITING]\
+       || ( self.changes[:status] == [WAITING, RUNNING] && Gorgon.status == Gorgon::AVAILABLE ) \
+       || self.changes[:status] == [RUNNING, IDLE] || self.changes[:status] == [WAITING, IDLE]
+
+    self.errors.add(:base, "Not a valid transition Mr Nixon") unless retval
+     puts self.errors.inspect
+    #retval
   end
 end
