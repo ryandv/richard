@@ -16,7 +16,7 @@ class Gorgon < ActiveRecord::Base
   end
 
   def self.finish(user_id)
-    Gorgon.all.first.update_attributes! status: AVAILABLE, user_id: user_id
+    Gorgon.all.first.update_attributes! status: AVAILABLE, user_id: nil
   end
 
   def self.running_user_id

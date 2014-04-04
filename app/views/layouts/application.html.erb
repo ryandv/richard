@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="gorgonApp">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
@@ -33,6 +33,7 @@
     <!-- For all other devices -->
     <!-- Size should be 32 x 32 pixels -->
     <%= favicon_link_tag 'favicon.ico', :rel => 'shortcut icon' %>
+
 
     <%= javascript_include_tag "application" %>
   </head>
@@ -74,7 +75,7 @@
               <%=  Gorgon::MAP[Gorgon.status] %>
               </li>
               <hr>
-                <% if current_user.waiting? %>
+                <% if current_user.waiting? && User.next_user.id == current_user.id %>
                   <% if User.gorgon_free? %>
                     <li class="button">
                     <%= button_to "Run Gorgon", {:controller => "users", :action => "run_gorgon", :id => current_user.id} , :method=>:post, :class => "btn btn-primary" %>
@@ -83,11 +84,15 @@
                   <li class="button">
                   <%= button_to "Stop Waiting", {:controller => "users", :action => "stop_waiting", :id => current_user.id} , :method=>:post, :class => "btn btn-primary" %>
                   </li>
+
                 <% elsif current_user.running? %>
+
                   <li class="button">
                     <%= button_to "Finish", {:controller => "users", :action => "finish_running", :id => current_user.id} , :method=>:post, :class => "btn btn-primary" %>
                   </li>
+
                 <% else %>
+
                   <li>
                   <%= button_to "Start Waiting", {:controller => "users", :action => "start_waiting", :id => current_user.id} , :method=>:post, :class => "btn btn-primary" %>
                   </li>

@@ -57,7 +57,7 @@ class User < ActiveRecord::Base
 
   def validate_transition
      retval = self.changes[:status] == [IDLE, WAITING]\
-       || ( self.changes[:status] == [WAITING, RUNNING] && Gorgon.status == Gorgon::AVAILABLE ) && self.id == User.next_user.id \
+       || ( self.changes[:status] == [WAITING, RUNNING] && Gorgon.status == Gorgon::AVAILABLE )  && self.id == User.next_user.id \
        || self.changes[:status] == [RUNNING, IDLE] || self.changes[:status] == [WAITING, IDLE]
 
     puts self.changes[:status]

@@ -1,14 +1,23 @@
 class UsersController < ApplicationController
 
   def index
-    if current_user.id == Gorgon.running_user_id && current_user.running_too_long?
-      flash[:warning] = "You've been hogging Richard"
-    end
-
     if current_user
+      if current_user.id == Gorgon.running_user_id && current_user.running_too_long?
+        flash[:warning] = "You've been hogging Richard"
+      end
       @users = User.order("status desc").order("status_changed_at")
+      #respond_to do |format|
+      #  format.json { render :json => @users}
+      #  format.html { render :html => @users}
+      #end
     else
       redirect_to new_user_session_path
+    end
+  end
+
+  def users_json
+    respond_to do |format|
+      format.json { render json: User.all }
     end
   end
 
