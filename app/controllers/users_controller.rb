@@ -6,10 +6,6 @@ class UsersController < ApplicationController
         flash[:warning] = "You've been hogging Richard"
       end
       @users = User.order("status desc").order("status_changed_at")
-      #respond_to do |format|
-      #  format.json { render :json => @users}
-      #  format.html { render :html => @users}
-      #end
     else
       redirect_to new_user_session_path
     end
