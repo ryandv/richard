@@ -5,7 +5,7 @@
 <th>User</th><th>Status</th><th>Status changed at</th>
 </tr>
 </thead>
-<tr ng-repeat="user in users">
+<tr ng-repeat="user in users" class="{{user.current_user|formatCurrentUserRow}}">
   <td>{{ user.email }}</td>
   <td>{{ user.status }}</td>
   <td>{{ user.status_changed_at }}</td>
