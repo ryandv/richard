@@ -12,8 +12,19 @@ class UsersController < ApplicationController
   end
 
   def users_json
+puts "**** * * * * * * * *"  
+puts "**** * * * * * * * *"  
+puts "**** * * * * * * * *"  
+puts "**** * * * * * * * *"  
+puts "**** * * * * * * * *"  
+puts "**** * * * * * * * *"  
+puts "**** * * * * * * * *"  
+puts "**** * * * * * * * *"  
+puts "**** * * * * * * * *"  
+puts "**** * * * * * * * *"  
+p current_user
     respond_to do |format|
-      format.json { render json: User.all_json.to_json }
+      format.json { render json: User.all_json(current_user).to_json }
     end
   end
 

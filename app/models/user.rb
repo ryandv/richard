@@ -35,21 +35,21 @@ class User < ActiveRecord::Base
     end
   end
 
-  def hashify
+  def hashify(current_user)
     {
       :status_changed_at => self.status_changed_at.strftime("%Y-%m-%d %I:%M %p"),
-      :current_user => self.current_user?,
+      :current_user => self.current_user?(current_user),
       :status => STATUS_MAP[self.status],
       :email => self.email
     }
   end
 
-  def current_user?
+  def current_user?(current_user)
     current_user.id == self.id
   end
 
-  def self.all_json
-    User.all.map {|u| u.hashify }
+  def self.all_json(current_user)
+    User.all.map {|u| u.hashify(current_user) }
   end
 
   def waiting?
