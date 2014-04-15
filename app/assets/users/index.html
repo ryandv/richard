@@ -5,23 +5,11 @@
 <th>User</th><th>Status</th><th>Status changed at</th>
 </tr>
 </thead>
-<tr ng-repeat="user in users" class={{ user.current_user | formatCurrentUserRow}} >
+<tr ng-repeat="user in users | orderBy: ['-status', 'status_changed_at | formatDateTime'] " class="{{user.current_user | formatCurrentUserRow}}">
   <td>{{ user.email }}</td>
-  <td>{{ user.status }}</td>
-  <td>{{ user.status_changed_at }}</td>
+  <td>{{ user.status | formatStatus }}</td>
+  <td>{{ user.status_changed_at | date:'yyyy-MM-d h:m:s'}}</td>
 </tr>
 </thead>
 </table>
 </div>
-
-
-<!--<%= User.next_user.email if User.next_user %>-->
-<!--<% if current_user %>-->
-  <!--<% @users.each do |user| %>-->
-  <!--<tr class="<%= "success" if user.id == current_user.id %>">-->
-  <!--</tr>-->
-  <!--<% end %>-->
-<!--<% else %>-->
-  <!--You aren't logged in.-->
-<!--<% end %>-->
-

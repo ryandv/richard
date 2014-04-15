@@ -37,14 +37,15 @@ class User < ActiveRecord::Base
 
   def hashify(current_user)
     {
-      :status_changed_at => self.status_changed_at.strftime("%Y-%m-%d %I:%M %p"),
+      :status_changed_at => self.status_changed_at,
       :current_user => self.current_user?(current_user),
-      :status => STATUS_MAP[self.status],
+      :status => self.status,
       :email => self.email
     }
   end
 
   def current_user?(current_user)
+    puts (current_user.id == self.id).class
     current_user.id == self.id
   end
 
