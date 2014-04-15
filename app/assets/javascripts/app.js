@@ -13,8 +13,5 @@ gorgonApp.config(['$routeProvider',
           when('/', {
             templateUrl: 'assets/index.html',
             controllers: 'UserCtrl'
-          }).
-          otherwise({
-            redirectTo: '/'
-          });
+          })
   }]);

@@ -37,9 +37,9 @@ class User < ActiveRecord::Base
 
   def hashify(current_user)
     {
-      :status_changed_at => self.status_changed_at.strftime("%Y-%m-%d %I:%M %p"),
+      :status_changed_at => self.status_changed_at,
       :current_user => self.current_user?(current_user),
-      :status => STATUS_MAP[self.status],
+      :status => self.status,
       :email => self.email
     }
   end
@@ -79,7 +79,5 @@ class User < ActiveRecord::Base
 
     puts self.changes[:status]
     self.errors.add(:base, "Not a valid transition Mr Nixon") unless retval
-     puts self.errors.inspect
-    #retval
   end
 end
