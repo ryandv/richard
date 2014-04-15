@@ -13,8 +13,6 @@ class UsersController < ApplicationController
 
   def users_json
     respond_to do |format|
-      puts "asdasdasdasdasd"
-      puts User.all_json(current_user).to_json
       format.json { render json: User.all_json(current_user).to_json }
     end
   end

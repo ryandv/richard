@@ -45,7 +45,6 @@ class User < ActiveRecord::Base
   end
 
   def current_user?(current_user)
-    puts (current_user.id == self.id).class
     current_user.id == self.id
   end
 
@@ -80,7 +79,5 @@ class User < ActiveRecord::Base
 
     puts self.changes[:status]
     self.errors.add(:base, "Not a valid transition Mr Nixon") unless retval
-     puts self.errors.inspect
-    #retval
   end
 end
