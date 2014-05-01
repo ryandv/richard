@@ -9,6 +9,7 @@ class User < ActiveRecord::Base
 
   validate :validate_transition, on: :update
 
+  after_update :notify_next_in_line
 
   IDLE = 0
   WAITING = 1
@@ -79,5 +80,9 @@ class User < ActiveRecord::Base
 
     puts self.changes[:status]
     self.errors.add(:base, "Not a valid transition Mr Nixon") unless retval
+  end
+
+  def notify_next_in_line
+    UserMailer.notify_next_in_line
   end
 end
