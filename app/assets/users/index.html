@@ -8,7 +8,7 @@
 <tr ng-repeat="user in users | orderBy: ['-status', 'status_changed_at | formatDateTime'] " class="{{user.current_user | formatCurrentUserRow}}">
   <td>{{ user.email }}</td>
   <td>{{ user.status | formatStatus }}</td>
-  <td>{{ user.status_changed_at | date:'yyyy-MM-d h:m:s'}}</td>
+  <td>{{ user.status_changed_at | date:'yyyy-MM-dd h:m:s'}}</td>
 </tr>
 </thead>
 </table>

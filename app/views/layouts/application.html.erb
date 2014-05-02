@@ -36,6 +36,10 @@
 
 
     <%= javascript_include_tag "application" %>
+
+    <script>
+
+    </script>
   </head>
   <body>
 
@@ -51,9 +55,9 @@
           <div class="container-fluid nav-collapse">
             <ul class="nav">
                 <% if !current_user %>
-                  <li><%= link_to "Sign In", new_user_session_path %></li>
-                  <li><%= link_to "Register", new_user_registration_path %></li>
-                  <li><%= link_to "Sign in with Google", user_omniauth_authorize_path(:google_oauth2) %></li>
+                  <!--<li><%= link_to "Sign In", new_user_session_path %></li>-->
+                  <!--<li><%= link_to "Register", new_user_registration_path %></li>-->
+                  <li><%= link_to "Sign in", user_omniauth_authorize_path(:google_oauth2) %></li>
                 <% else %>
                   <li class="user-info"><%= "Welcome, #{current_user.email}" %></li>
                   <li><%= link_to "Log out", destroy_user_session_path, method: :delete %></li>
@@ -94,7 +98,7 @@
                 <% else %>
 
                   <li>
-                  <%= button_to "Start Waiting", {:controller => "users", :action => "start_waiting", :id => current_user.id} , :method=>:post, :class => "btn btn-primary" %>
+                  <%= button_to "Start Waiting", {:controller => "users", :action => "start_waiting", :id => current_user.id }, :class => "btn btn-primary", remote: true, "ng-submit" => "start_waiting()" %>
                   </li>
                 <% end %>
             </ul>
