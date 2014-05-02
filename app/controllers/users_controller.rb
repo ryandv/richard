@@ -60,7 +60,7 @@ class UsersController < ApplicationController
     if user.errors.any?
       flash[:error] = user.errors.full_messages
     else
-      Gorgon.finish(current_user.id)
+      Gorgon.finish
     end
 
     redirect_to root_path
