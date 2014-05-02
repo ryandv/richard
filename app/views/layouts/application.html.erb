@@ -55,8 +55,6 @@
           <div class="container-fluid nav-collapse">
             <ul class="nav">
                 <% if !current_user %>
-                  <!--<li><%= link_to "Sign In", new_user_session_path %></li>-->
-                  <!--<li><%= link_to "Register", new_user_registration_path %></li>-->
                   <li><%= link_to "Sign in", user_omniauth_authorize_path(:google_oauth2) %></li>
                 <% else %>
                   <li class="user-info"><%= "Welcome, #{current_user.email}" %></li>
