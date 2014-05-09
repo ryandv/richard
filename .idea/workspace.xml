@@ -2,13 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f5ed4968-3790-4923-859d-00229eb9d54e" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/views/layouts/application.html.erb" afterPath="$PROJECT_DIR$/app/views/layouts/application.html.erb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/config/environment.rb" afterPath="$PROJECT_DIR$/config/environment.rb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/models/gorgon.rb" afterPath="$PROJECT_DIR$/app/models/gorgon.rb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/config/routes.rb" afterPath="$PROJECT_DIR$/config/routes.rb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/services/slack.rb" afterPath="$PROJECT_DIR$/app/services/slack.rb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/models/user.rb" afterPath="$PROJECT_DIR$/app/models/user.rb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/mailers/user_mailer.rb" afterPath="$PROJECT_DIR$/app/mailers/user_mailer.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="richard.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -58,10 +52,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="slack.rb" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="slack.rb" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/services/slack.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="49" column="48" selection-start="1514" selection-end="1514" vertical-scroll-proportion="0.728444" vertical-offset="0" max-vertical-offset="1009">
+            <state line="22" column="23" selection-start="650" selection-end="650" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1005">
               <folding />
             </state>
           </provider>
@@ -85,19 +79,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="application.html.erb" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="application.html.erb" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/views/layouts/application.html.erb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="86" column="134" selection-start="3799" selection-end="3799" vertical-scroll-proportion="-24.25" vertical-offset="708" max-vertical-offset="1890">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="email.yml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/config/email.yml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="13" column="29" selection-start="296" selection-end="296" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="285">
+            <state line="87" column="23" selection-start="3861" selection-end="3861" vertical-scroll-proportion="0.6060914" vertical-offset="708" max-vertical-offset="1890">
               <folding />
             </state>
           </provider>
@@ -278,6 +263,20 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="db" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="richard" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="richard" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="config" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -779,13 +778,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/config/email.yml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="29" selection-start="296" selection-end="296" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="285">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/views/users/index.html">
       <provider selected="true" editor-type-id="text-editor">
         <state line="8" column="0" selection-start="78" selection-end="78" vertical-scroll-proportion="0.1863354" vertical-offset="0" max-vertical-offset="644">
@@ -828,13 +820,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/views/layouts/application.html.erb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="86" column="134" selection-start="3799" selection-end="3799" vertical-scroll-proportion="-24.25" vertical-offset="708" max-vertical-offset="1890">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/controllers/users_controller.rb">
       <provider selected="true" editor-type-id="text-editor">
         <state line="37" column="7" selection-start="960" selection-end="960" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1110">
@@ -851,7 +836,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/services/slack.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="49" column="48" selection-start="1514" selection-end="1514" vertical-scroll-proportion="0.728444" vertical-offset="0" max-vertical-offset="1009">
+        <state line="22" column="23" selection-start="650" selection-end="650" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1005">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/views/layouts/application.html.erb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="87" column="23" selection-start="3861" selection-end="3861" vertical-scroll-proportion="0.6060914" vertical-offset="708" max-vertical-offset="1890">
           <folding />
         </state>
       </provider>
