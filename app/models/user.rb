@@ -76,13 +76,14 @@ class User < ActiveRecord::Base
   def validate_transition
      retval = self.changes[:status] == [IDLE, WAITING]\
        || ( self.changes[:status] == [WAITING, RUNNING] && Gorgon.status == Gorgon::AVAILABLE )  && self.id == User.next_user.id \
-       || self.changes[:status] == [RUNNING, IDLE] || self.changes[:status] == [WAITING, IDLE]
+       || self.changes[:status] == [RUNNING, IDLE] || self.changes[:status] == [WAITING, IDLE]\
+       || self.changes[:status] == [IDLE, RUNNING]
 
     puts self.changes[:status]
     self.errors.add(:base, "Not a valid transition Mr Nixon") unless retval
   end
 
   def notify_next_in_line
-    UserMailer.notify_next_in_line
+    UserMailer.notify_next_in_line if Gorgon.free?
   end
 end

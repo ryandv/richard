@@ -77,7 +77,7 @@
               <%=  Gorgon::MAP[Gorgon.status] %>
               </li>
               <hr>
-                <% if current_user.waiting? && User.next_user.id == current_user.id %>
+                <% if current_user.waiting? && current_user.id == User.next_user.id %>
                   <% if User.gorgon_free? %>
                     <li class="button">
                     <%= button_to "Run Gorgon", {:controller => "users", :action => "run_gorgon", :id => current_user.id} , :method=>:post, :class => "btn btn-primary" %>
@@ -86,17 +86,17 @@
                   <li class="button">
                   <%= button_to "Stop Waiting", {:controller => "users", :action => "stop_waiting", :id => current_user.id} , :method=>:post, :class => "btn btn-primary" %>
                   </li>
-
                 <% elsif current_user.running? %>
-
                   <li class="button">
                     <%= button_to "Finish", {:controller => "users", :action => "finish_running", :id => current_user.id} , :method=>:post, :class => "btn btn-primary" %>
                   </li>
-
+                <% elsif current_user.waiting? %>
+                  <li class="button">
+                    <%= button_to "Stop Waiting", {:controller => "users", :action => "stop_waiting", :id => current_user.id} , :method=>:post, :class => "btn btn-primary" %>
+                  </li>
                 <% else %>
-
                   <li>
-                  <%= button_to "Start Waiting", {:controller => "users", :action => "start_waiting", :id => current_user.id }, :class => "btn btn-primary", remote: true, "ng-submit" => "start_waiting()" %>
+                  <%= button_to "Start Waiting", {:controller => "users", :action => "start_waiting", :id => current_user.id }, :class => "btn btn-primary" %>
                   </li>
                 <% end %>
             </ul>

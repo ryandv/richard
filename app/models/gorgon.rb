@@ -22,4 +22,8 @@ class Gorgon < ActiveRecord::Base
   def self.running_user_id
     Gorgon.all.first.user_id
   end
+
+  def self.free?
+    Gorgon.status == AVAILABLE
+  end
 end
