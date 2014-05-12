@@ -58,7 +58,8 @@ class User < ActiveRecord::Base
   end
 
   def running?
-    self.status == RUNNING
+    #self.status == RUNNING
+    Gorgon.where(status: 0).where(user_id: self.id).count > 0
   end
 
   def self.next_user
@@ -66,11 +67,15 @@ class User < ActiveRecord::Base
   end
 
   def self.gorgon_free?
-    User.where(:status => RUNNING).empty?
+    #User.where(:status => RUNNING).empty?
+    Gorgon.where(status: 1).count > 0
   end
 
   def running_too_long?
-    Time.now - self.status_changed_at > 2.minutes
+    puts "running too long"
+    puts Gorgon.running_user_id == self.id && Time.now - self.status_changed_at > 2.minutes
+    #current_user.id == Gorgon.running_user_id && current_user.running_too_long?
+    Gorgon.running_user_id == self.id && Time.now - self.status_changed_at > 2.minutes
   end
 
   def validate_transition
@@ -79,11 +84,27 @@ class User < ActiveRecord::Base
        || self.changes[:status] == [RUNNING, IDLE] || self.changes[:status] == [WAITING, IDLE]\
        || self.changes[:status] == [IDLE, RUNNING]
 
-    puts self.changes[:status]
     self.errors.add(:base, "Not a valid transition Mr Nixon") unless retval
   end
 
   def notify_next_in_line
+    # notify when someone leaves q
+    # notify when someone finishes ...
+
     UserMailer.notify_next_in_line if Gorgon.free?
+  end
+
+  def self.runner_hogging
+    puts 'hogging'
+    UserMailer.test_email
+
+    user = Gorgon.running_user_id
+    if user
+      over_too_long = (Gorgon.running_user_id == self.id) && (Time.now - self.status_changed_at > 20.minutes)
+      waiters = User.where(status: WAITING).count
+      if over_too_long
+        notify_hog(user, waiters)
+      end
+    end
   end
 end

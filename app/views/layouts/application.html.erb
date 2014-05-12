@@ -104,8 +104,11 @@
         </div><!--/span-->
         <% end %>
 
-        <div ng-view class="span9">
+
+        <div class="span9">
           <%= bootstrap_flash %>
+        </div>
+        <div ng-view class="span9">
           <%= yield %>
         </div>
       </div><!--/row-->

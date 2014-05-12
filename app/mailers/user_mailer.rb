@@ -9,4 +9,17 @@ class UserMailer < ActionMailer::Base
 
     mail(to: "#{user.email}", subject: subject).deliver if user
   end
+
+  def test_email
+    mail(to: "robertd@nulogy.com", subject: "lots of stuff").deliver
+  end
+
+  def notify_hog(user, waiter)
+    subject = "Are you still running Gorgon?"
+    # #{pluralize(waiter.count, 'person')}
+    if waiter.count > 0
+      subject << " - #{waiter.count}  are waiting."
+    end
+    mail(to: "#{user.email}", subject: subject).deliver
+  end
 end
