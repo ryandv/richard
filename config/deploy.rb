@@ -41,7 +41,7 @@ namespace :deploy do
   task :symlink_google_apps, :roles => :web, :except => { :no_release => true } do
     run "ln -nfs #{shared_path}/config/google-apps.yml #{latest_release}/config/google-apps.yml"
   end
-  after "deploy:symlink_configs", "deploy:symlink_google_apps"
+  after "deploy:create_symlink", "deploy:symlink_google_apps"
 
   desc "Restart Passenger gracefully"
   task :apprestart, :roles => :app, :except => { :no_release => true } do
