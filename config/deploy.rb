@@ -40,7 +40,7 @@ namespace :deploy do
     end
 
     task :database_yml, :roles => :web, :except => { :no_release => true } do
-      run "cp -f #{shared_path}/config/database.yml #{current_path}/config/database.yml"
+      run "ln -fs #{shared_path}/config/database.yml #{current_path}/config/database.yml"
     end
 
     task :create_logspace, :roles => :app, :except => { :no_release => true } do
