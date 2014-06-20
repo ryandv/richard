@@ -15,34 +15,35 @@ class UsersController < ApplicationController
   end
 
   def start_waiting
-    user = User.find(params[:id])
-    user.update_attributes :status => User::WAITING, :status_changed_at => Time.now
+    current_user.update_attributes :status => User::WAITING, :status_changed_at => Time.now
 
-    if user.errors.any?
-      flash[:error] = user.errors.full_messages
+    if current_user.errors.any?
+      flash[:error] = current_user.errors.full_messages
     end
 
     redirect_to root_path
   end
 
   def stop_waiting
-    user = User.find(params[:id])
+    current_user.update_attributes :status => User::IDLE, :status_changed_at => Time.now
+    UserMailer.notify_next_in_line
 
-    user.update_attributes :status => User::IDLE, :status_changed_at => Time.now
-
-    if user.errors.any?
-      flash[:error] = user.errors.full_messages
+    if current_user.errors.any?
+      flash[:error] = current_user.errors.full_messages
     end
 
     redirect_to root_path
   end
 
   def run_gorgon
-    user = User.find(params[:id])
-    user.update_attributes :status => User::RUNNING, :status_changed_at => Time.now
+    if User.gorgon_free?
+      current_user.update_attributes :status => User::RUNNING, :status_changed_at => Time.now
+    else
+      current_user.errors.add(:base, "Gorgon is already running, please join the queue")
+    end
 
-    if user.errors.any?
-      flash[:error] = user.errors.full_messages
+    if current_user.errors.any?
+      flash[:error] = current_user.errors.full_messages
     else
       Gorgon.run(current_user.id)
     end
@@ -51,11 +52,11 @@ class UsersController < ApplicationController
   end
 
   def finish_running
-    user = User.find(params[:id])
-    user.update_attributes :status => User::IDLE, :status_changed_at => Time.now
+    current_user.update_attributes :status => User::IDLE, :status_changed_at => Time.now
+    UserMailer.notify_next_in_line
 
-    if user.errors.any?
-      flash[:error] = user.errors.full_messages
+    if current_user.errors.any?
+      flash[:error] = current_user.errors.full_messages
     else
       Gorgon.finish
     end
