@@ -5,7 +5,7 @@ class UserMailer < ActionMailer::Base
   def notify_next_in_line
     user = User.where(status: User::WAITING).order(updated_at: :desc).first
 
-    subject = "Gorgon is free!"
+    subject = "#{Time.now.strftime("%H:%M")} - Gorgon is free!"
 
     mail(to: "#{user.email}", subject: subject).deliver if user
   end
