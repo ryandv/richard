@@ -16,3 +16,6 @@
 
 /config/google-apps.yml
 /config/nginx.conf
+/config/database.yml
+/.ruby-version
+/.ruby-gemset

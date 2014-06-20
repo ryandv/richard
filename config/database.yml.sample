@@ -1,0 +1,21 @@
+defaults: &defaults
+  adapter: postgresql
+  username: nulogy
+  password: Nulogy4Ever
+  host: localhost
+
+development:
+  <<: *defaults
+  database: richard_development
+
+# Warning: The database defined as "test" will be erased and
+# re-generated from your development database when you run "rake".
+# Do not set this db to the same as development or production.
+test:
+  <<: *defaults
+  database: richard_test
+  min_messages: warning
+
+production:
+  <<: *defaults
+  database: richard_production
