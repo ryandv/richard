@@ -1,17 +1,13 @@
 class UserMailer < ActionMailer::Base
   default from: "richard@nulogy.com"
 
-
   def notify_next_in_line
-    user = User.where(status: User::WAITING).order(updated_at: :desc).first
-
-    subject = "#{Time.now.strftime("%H:%M")} - Gorgon is free!"
-
-    mail(to: "#{user.email}", subject: subject).deliver if user
-  end
-
-  def test_email
-    mail(to: "robertd@nulogy.com", subject: "lots of stuff").deliver
+    next_transaction = QueueTransaction.get_next_in_line
+    if next_transaction
+      user = next_transaction.user
+      subject = "#{Time.now.strftime("%H:%M")} - Gorgon is free!"
+      mail(to: "#{user.email}", subject: subject).deliver
+    end
   end
 
   def notify_hog(user, waiter)

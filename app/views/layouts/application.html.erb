@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="gorgonApp">
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
@@ -67,38 +67,38 @@
       </div>
     </div>
 
+    <% queue_transaction = current_user ? current_user.current_queue_transaction : nil %>
     <div class="container-fluid">
       <div class="row-fluid">
         <% if current_user %>
         <div class="span2">
           <div class="well sidebar-nav">
             <ul class="nav nav-list actions">
-              <li class="status <%= Gorgon::MAP[Gorgon.status] %>">
-              <%=  Gorgon::MAP[Gorgon.status] %>
+              <li>
+                Estimated wait time of: <%= format_as_minutes(QueueTransaction.average_run_time * QueueTransaction.number_transactions_before(queue_transaction)) %>.
               </li>
               <hr>
-                <% if current_user.waiting? && current_user.id == User.next_user.id %>
-                  <% if User.gorgon_free? %>
-                    <li class="button">
-                    <%= button_to "Run Gorgon", {:controller => "users", :action => "run_gorgon", :id => current_user.id} , :method=>:post, :class => "btn btn-primary" %>
-                    </li>
-                  <% end %>
-                  <li class="button">
-                  <%= button_to "Stop Waiting", {:controller => "users", :action => "stop_waiting", :id => current_user.id} , :method=>:post, :class => "btn btn-primary" %>
-                  </li>
-                <% elsif current_user.running? %>
-                  <li class="button">
-                    <%= button_to "Finish", {:controller => "users", :action => "finish_running", :id => current_user.id} , :method=>:post, :class => "btn btn-primary" %>
-                  </li>
-                <% elsif current_user.waiting? %>
-                  <li class="button">
-                    <%= button_to "Stop Waiting", {:controller => "users", :action => "stop_waiting", :id => current_user.id} , :method=>:post, :class => "btn btn-primary" %>
-                  </li>
-                <% else %>
-                  <li>
-                  <%= button_to "Start Waiting", {:controller => "users", :action => "start_waiting", :id => current_user.id }, :class => "btn btn-primary" %>
-                  </li>
-                <% end %>
+
+              <% if queue_transaction.nil? %>
+                <li class="button">
+                  <%= button_to "Start Waiting", queue_transactions_path, :method => :post, :class => "btn btn-primary" %>
+                </li>
+
+              <% elsif queue_transaction.waiting? %>
+                <li class="button">
+                  <%= button_to "Stop Waiting", cancel_queue_transaction_path(queue_transaction), :method => :put, :class => "btn btn-primary" %>
+                </li>
+
+              <% elsif queue_transaction.pending? %>
+                <li class="button">
+                  <%= button_to "Run Gorgon", run_queue_transaction_path(queue_transaction), :method => :put, :class => "btn btn-primary" %>
+                </li>
+
+              <% elsif queue_transaction.running? %>
+                <li class="button">
+                  <%= button_to "Finish", finish_queue_transaction_path(queue_transaction), :method => :put, :class => "btn btn-primary" %>
+                </li>
+              <% end %>
             </ul>
           </div><!--/.well -->
         </div><!--/span-->
