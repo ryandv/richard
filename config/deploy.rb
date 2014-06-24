@@ -33,7 +33,8 @@ task :qa do
 end
 
 namespace :deploy do
-  before "deploy:assets:precompile", "deploy:database_yml"
+  before "deploy:assets:precompile", "deploy:symlink_database_yml"
+  before "deploy:assets:precompile", "deploy:symlink_nginx_conf"
   after "deploy:create_symlink", "deploy:create_logspace"
   after "deploy:create_logspace", "deploy:nginx_config"
   after "deploy:restart", "deploy:cleanup"
@@ -44,8 +45,12 @@ namespace :deploy do
     run "#{try_sudo} ln -fs #{shared_path}/config/nginx.conf /etc/nginx/sites-enabled/#{application}.conf"
   end
 
-  task :database_yml, :roles => :web, :except => { :no_release => true } do
+  task :symlink_database_yml, :roles => :web, :except => { :no_release => true } do
     run "#{try_sudo} ln -fs #{shared_path}/config/database.yml #{latest_release}/config/database.yml"
+  end
+
+  task :symlink_nginx_conf, :roles => :web, :except => { :no_release => true } do
+    run "#{try_sudo} ln -fs #{shared_path}/config/nginx.conf #{latest_release}/config/nginx.conf"
   end
 
   task :create_logspace, :roles => :app, :except => { :no_release => true } do
