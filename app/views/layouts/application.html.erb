@@ -109,12 +109,14 @@
           <%= bootstrap_flash %>
         </div>
         <div ng-view class="span9">
-          <%= yield %>
+          <% if current_user %>
+            <%= yield %>
+          <% end %>
         </div>
       </div><!--/row-->
 
       <footer>
-        <p>&copy; Company 1977</p>
+        <p>&copy; Nulogy Corporation 2014</p>
       </footer>
 
     </div> <!-- /container -->

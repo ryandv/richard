@@ -30,8 +30,8 @@ class QueueTransactionsController < ApplicationController
     transaction = QueueTransaction.get_next_in_line
     if transaction
       transaction.update_attributes :pending_start_at => Time.now
+      UserMailer.notify_next_in_line
     end
-    UserMailer.notify_next_in_line
 
     if current_user.errors.any?
       flash[:error] = current_user.errors.full_messages
