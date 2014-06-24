@@ -45,7 +45,7 @@ namespace :deploy do
   end
 
   task :database_yml, :roles => :web, :except => { :no_release => true } do
-    run "ln -nfs #{shared_path}/config/database.yml #{latest_release}/config/database.yml"
+    run "#{try_sudo} ln -fs #{shared_path}/config/database.yml #{latest_release}/config/database.yml"
   end
 
   task :create_logspace, :roles => :app, :except => { :no_release => true } do
