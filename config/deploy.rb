@@ -41,8 +41,8 @@ namespace :deploy do
 
   task :nginx_config, :roles => :web, :except => { :no_release => true } do
     run "mkdir -p #{shared_path}/config"
-    run "#{try_sudo} cp -f #{current_path}/config/nginx.conf #{shared_path}/config/nginx.conf"
-    run "#{try_sudo} ln -fs #{shared_path}/config/nginx.conf /etc/nginx/sites-enabled/#{application}.conf"
+    #run "#{try_sudo} cp -f #{current_path}/config/nginx.conf #{shared_path}/config/nginx.conf"
+    #run "#{try_sudo} ln -fs #{shared_path}/config/nginx.conf /etc/nginx/sites-enabled/#{application}.conf"
   end
 
   task :symlink_database_yml, :roles => :web, :except => { :no_release => true } do
