@@ -83,7 +83,7 @@
                   elsif queue_size == 1
                     wait_estimate = QueueTransaction.average_run_time - first_in_queue.blocking_duration
                   else
-                    wait_estimate = QueueTransaction.average_run_time * QueueTransaction.number_transactions_before(queue_transaction) - first_in_queue.blocking_duration
+                    wait_estimate = [0, QueueTransaction.average_run_time * QueueTransaction.number_transactions_before(queue_transaction) - first_in_queue.blocking_duration].max
                   end
                 %>
                 Estimated wait time of: <%= format_as_minutes(wait_estimate) %>.
