@@ -68,6 +68,7 @@
     </div>
 
     <% queue_transaction = current_user ? current_user.current_queue_transaction : nil %>
+    <% queue_size = QueueTransaction.queue_size %>
     <div class="container-fluid">
       <div class="row-fluid">
         <% if current_user %>
@@ -75,13 +76,27 @@
           <div class="well sidebar-nav">
             <ul class="nav nav-list actions">
               <li>
-                Estimated wait time of: <%= format_as_minutes(QueueTransaction.average_run_time * QueueTransaction.number_transactions_before(queue_transaction)) %>.
+                <%
+                  first_in_queue = QueueTransaction.get_first_in_queue
+                  if queue_size == 0
+                    wait_estimate = 0
+                  elsif queue_size == 1
+                    wait_estimate = QueueTransaction.average_run_time - first_in_queue.blocking_duration
+                  else
+                    wait_estimate = QueueTransaction.average_run_time * QueueTransaction.number_transactions_before(queue_transaction) - first_in_queue.blocking_duration
+                  end
+                %>
+                Estimated wait time of: <%= format_as_minutes(wait_estimate) %>.
               </li>
               <hr>
 
               <% if queue_transaction.nil? %>
                 <li class="button">
-                  <%= button_to "Start Waiting", queue_transactions_path, :method => :post, :class => "btn btn-primary" %>
+                  <% if queue_size == 0 %>
+                    <%= button_to "Run Gorgon", queue_transactions_path, :method => :post, :class => "btn btn-primary" %>
+                  <% else %>
+                    <%= button_to "Start Waiting", queue_transactions_path, :method => :post, :class => "btn btn-primary" %>
+                  <% end %>
                 </li>
 
               <% elsif queue_transaction.waiting? %>

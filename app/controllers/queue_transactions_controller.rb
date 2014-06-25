@@ -27,10 +27,12 @@ class QueueTransactionsController < ApplicationController
   def cancel
     load_queue_transaction
     @queue_transaction.update_attributes :cancelled_at => Time.now, :is_complete => true
-    transaction = QueueTransaction.get_next_in_line
-    if transaction
-      transaction.update_attributes :pending_start_at => Time.now
-      UserMailer.notify_next_in_line
+
+    first_in_queue = QueueTransaction.get_first_in_queue
+    next_in_queue = QueueTransaction.get_next_in_queue(@queue_transaction)
+    if first_in_queue == next_in_queue
+      next_in_queue.update_attributes :pending_start_at => Time.now
+      UserMailer.notify_user_of_turn(next_in_queue)
     end
 
     if current_user.errors.any?
@@ -57,11 +59,11 @@ class QueueTransactionsController < ApplicationController
   def finish
     load_queue_transaction
     @queue_transaction.update_attributes :finished_at => Time.now, :is_complete => true
-    transaction = QueueTransaction.get_next_in_line
+    transaction = QueueTransaction.get_first_in_queue
     if transaction
       transaction.update_attributes :pending_start_at => Time.now
+      UserMailer.notify_user_of_turn(transaction)
     end
-    UserMailer.notify_next_in_line
 
     if current_user.errors.any?
       flash[:error] = current_user.errors.full_messages

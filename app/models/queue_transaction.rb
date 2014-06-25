@@ -20,7 +20,7 @@ class QueueTransaction < ActiveRecord::Base
     sql =<<-SQL
       select extract('epoch' from avg(finished_at - pending_start_at)) as average_run_time
       from queue_transactions
-      where is_complete = true
+      where is_complete = true and finished_at is not null
     SQL
     QueueTransaction.find_by_sql(sql).first["average_run_time"].to_f
   end
@@ -33,7 +33,15 @@ class QueueTransaction < ActiveRecord::Base
     end
   end
 
-  def self.get_next_in_line
+  def self.queue_size
+    QueueTransaction.where(:is_complete => false).count
+  end
+
+  def self.get_next_in_queue(transaction)
+    QueueTransaction.where("is_complete = false and id > :id", {:id => transaction.id}).order("waiting_start_at asc").first
+  end
+
+  def self.get_first_in_queue
     QueueTransaction.where(:is_complete => false).order("waiting_start_at asc").first
   end
 

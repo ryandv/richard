@@ -1,13 +1,10 @@
 class UserMailer < ActionMailer::Base
   default from: "richard@nulogy.com"
 
-  def notify_next_in_line
-    next_transaction = QueueTransaction.get_next_in_line
-    if next_transaction
-      user = next_transaction.user
-      subject = "#{Time.now.strftime("%H:%M")} - Gorgon is free!"
-      mail(to: "#{user.email}", subject: subject).deliver
-    end
+  def notify_user_of_turn(transaction)
+    user = transaction.user
+    subject = "Gorgon is free! (#{Time.now.strftime("%H:%M")})"
+    mail(to: "#{user.email}", subject: subject).deliver
   end
 
   def notify_hog(user, waiter)
