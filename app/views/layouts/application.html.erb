@@ -90,35 +90,12 @@
               </li>
               <hr>
 
-              <% if queue_transaction.nil? %>
-                <li class="button">
-                  <% if queue_size == 0 %>
-                    <%= button_to "Run Gorgon", queue_transactions_path, :method => :post, :class => "btn btn-primary" %>
-                  <% else %>
-                    <%= button_to "Start Waiting", queue_transactions_path, :method => :post, :class => "btn btn-primary" %>
-                  <% end %>
-                </li>
+              <%= action_buttons %>
 
-              <% elsif queue_transaction.waiting? %>
-                <li class="button">
-                  <%= button_to "Stop Waiting", cancel_queue_transaction_path(queue_transaction), :method => :put, :class => "btn btn-primary" %>
-                </li>
-
-              <% elsif queue_transaction.pending? %>
-                <li class="button">
-                  <%= button_to "Run Gorgon", run_queue_transaction_path(queue_transaction), :method => :put, :class => "btn btn-primary" %>
-                </li>
-
-              <% elsif queue_transaction.running? %>
-                <li class="button">
-                  <%= button_to "Finish", finish_queue_transaction_path(queue_transaction), :method => :put, :class => "btn btn-primary" %>
-                </li>
-              <% end %>
             </ul>
           </div><!--/.well -->
         </div><!--/span-->
         <% end %>
-
 
         <div class="span9">
           <%= bootstrap_flash %>
@@ -133,8 +110,6 @@
       <footer>
         <p>&copy; Nulogy Corporation 2014</p>
       </footer>
-
     </div> <!-- /container -->
-
   </body>
 </html>
