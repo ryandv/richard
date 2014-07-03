@@ -74,6 +74,11 @@ class QueueTransactionsController < ApplicationController
     redirect_to root_path
   end
 
+  def pending_next
+    current_user == QueueTransaction.get_first_in_queue && Gorgon.free?
+    render :nothing => true, :status => 200, :content_type => 'text/html'
+  end
+
 private
   def load_queue_transaction
     @queue_transaction = QueueTransaction.find(params[:id])
