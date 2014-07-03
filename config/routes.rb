@@ -8,6 +8,9 @@ Richard::Application.routes.draw do
       put 'run'
       put 'finish'
     end
+    collection do
+      get 'pending_next'
+    end
   end
 
   root :to => 'queue_transactions#index'
