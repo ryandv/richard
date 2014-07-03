@@ -15,9 +15,9 @@
 /tmp
 
 /config/google-apps.yml
-<<<<<<< HEAD
 /config/nginx.conf
 /config/database.yml
 /.ruby-version
 /.ruby-gemset
 *.swp
+/.idea/*
