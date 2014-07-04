@@ -7,11 +7,11 @@ module Metrics
     first_in_queue = QueueTransaction.get_first_in_queue
 
     if queue_size == 0
-      wait_estimate = 0
+      0
     elsif queue_size == 1
-      wait_estimate = QueueTransaction.average_run_time - first_in_queue.blocking_duration
+      QueueTransaction.average_run_time - first_in_queue.blocking_duration
     else
-      wait_estimate = QueueTransaction.average_run_time * QueueTransaction.number_transactions_before(queue_transaction) - first_in_queue.blocking_duration
+      QueueTransaction.average_run_time * QueueTransaction.number_transactions_before(queue_transaction) - first_in_queue.blocking_duration
     end
   end
 end

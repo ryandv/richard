@@ -18,9 +18,13 @@ class QueueTransaction < ActiveRecord::Base
 
   def self.average_run_time
     sql =<<-SQL
-      select extract('epoch' from avg(finished_at - pending_start_at)) as average_run_time
+      select extract(epoch from avg(finished_at - pending_start_at)) as average_run_time
       from queue_transactions
-      where is_complete = true and finished_at is not null
+      where is_complete = true and finished_at is not null and
+        extract(epoch from (finished_at - pending_start_at)) < (
+          select stddev(extract (epoch from (finished_at - pending_start_at)))
+        from queue_transactions)
+      and finished_at - pending_start_at > interval '3 minute'
     SQL
     QueueTransaction.find_by_sql(sql).first["average_run_time"].to_f
   end
