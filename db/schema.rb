@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140620203853) do
+ActiveRecord::Schema.define(:version => 20140706161841) do
 
   create_table "gorgon", :force => true do |t|
     t.integer "status"
@@ -28,6 +28,7 @@ ActiveRecord::Schema.define(:version => 20140620203853) do
     t.boolean  "is_complete",      :default => false
     t.datetime "created_at",                          :null => false
     t.datetime "updated_at",                          :null => false
+    t.datetime "force_release_at"
   end
 
   create_table "users", :force => true do |t|
