@@ -74,6 +74,16 @@ class QueueTransactionsController < ApplicationController
     redirect_to root_path
   end
 
+  def pending_next
+    if current_user.current_queue_transaction && current_user.current_queue_transaction.status == QueueTransaction::PENDING
+      next_in_line = true
+    else
+      next_in_line = false
+    end
+
+    render :json => {:next_in_line => next_in_line}
+  end
+
 private
   def load_queue_transaction
     @queue_transaction = QueueTransaction.find(params[:id])
