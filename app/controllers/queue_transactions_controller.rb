@@ -87,9 +87,11 @@ class QueueTransactionsController < ApplicationController
   def force_release
     load_queue_transaction
     @queue_transaction.update_attributes force_release_at: Time.now, is_complete: true#, finished_at: Time.now
-    transaction = QueueTransaction.get_first_in_queue
-    transaction.update_attributes pending_start_at: Time.now
-    UserMailer.notify_user_of_turn(transaction)
+    if transaction
+      transaction = QueueTransaction.get_first_in_queue
+      transaction.update_attributes pending_start_at: Time.now
+      UserMailer.notify_user_of_turn(transaction)
+    end
 
     redirect_to root_path
   end
