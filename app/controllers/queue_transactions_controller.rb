@@ -75,8 +75,13 @@ class QueueTransactionsController < ApplicationController
   end
 
   def pending_next
-    current_user == QueueTransaction.get_first_in_queue && Gorgon.free?
-    render :nothing => true, :status => 200, :content_type => 'text/html'
+    if current_user.current_queue_transaction && current_user.current_queue_transaction.status == QueueTransaction::PENDING
+      next_in_line = true
+    else
+      next_in_line = false
+    end
+
+    render :json => {:next_in_line => next_in_line}
   end
 
 private

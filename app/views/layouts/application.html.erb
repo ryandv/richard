@@ -41,12 +41,11 @@
         (function doPoll(data) {
         $.get('queue_transactions/pending_next')
             .done(function (data) {
-                    console.log("asdf");
-                    console.log(data);
-                    if(data == '') {
+                    if (localStorage.getItem("next_in_line") == 'false' && data["next_in_line"] == true) {
                         notifyMe();
                     }
-            })
+                    localStorage.setItem("next_in_line", data["next_in_line"])
+                })
             .always(function () {
                 setTimeout(doPoll, 5000);
             });
@@ -61,20 +60,20 @@
         // Let's check if the user is okay to get some notification
         else if (Notification.permission === "granted") {
             // If it's okay let's create a notification
-            var notification = new Notification("Hi there!");
+            var notification = new Notification("Hey there. Just swinging by to let you know gorgon is free!\nxoxo, Richard", {icon: "<%= image_path('Richard-Gere.jpg') %>"});
         }
         // Otherwise, we need to ask the user for permission
         // Note, Chrome does not implement the permission static property
         // So we have to check for NOT 'denied' instead of 'default'
         else if (Notification.permission !== 'denied') {
-            Notification.requestPermission(function (permission) {
+                Notification.requestPermission(function (permission) {
                 // Whatever the user answers, we make sure we store the information
                 if(!('permission' in Notification)) {
                     Notification.permission = permission;
                 }
                 // If the user is okay, let's create a notification
                 if (permission === "granted") {
-                    var notification = new Notification("Hi there!");
+                    var notification = new Notification("Gorgon is free!", {icon: "<%= image_path('Richard-Gere.jpg') %>"});
                 }
             });
         }
