@@ -38,6 +38,7 @@ namespace :deploy do
   before "deploy:assets:precompile", "deploy:symlink_nginx_conf"
   after "deploy:create_symlink", "deploy:create_logspace"
   after "deploy:create_logspace", "deploy:nginx_config"
+  after "deploy:create_logspace", "deploy:update_crontab"
   after "deploy:restart", "deploy:cleanup"
 
   task :nginx_config, :roles => :web, :except => { :no_release => true } do
@@ -90,5 +91,12 @@ namespace :deploy do
   task :cleanup, :except => {:no_release => true} do
     count = fetch(:keep_releases, 5).to_i
     try_sudo "ls -1dt #{releases_path}/* | tail -n +#{count + 1} | xargs rm -rf"
+  end
+
+  after "deploy:symlink", "deploy:update_crontab"
+
+  desc "Update the crontab file"
+  task :update_crontab, :roles => :db do
+    run "cd #{release_path} && bundle exec whenever --update-crontab #{application}"
   end
 end
