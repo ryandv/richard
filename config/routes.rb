@@ -7,6 +7,7 @@ Richard::Application.routes.draw do
       put 'cancel'
       put 'run'
       put 'finish'
+      put 'force_release'
     end
     collection do
       get 'pending_next'
