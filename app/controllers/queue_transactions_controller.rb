@@ -74,6 +74,16 @@ class QueueTransactionsController < ApplicationController
     redirect_to root_path
   end
 
+  def force_release
+    load_queue_transaction
+    @queue_transaction.update_attributes force_release_at: Time.now, is_complete: true#, finished_at: Time.now
+    transaction = QueueTransaction.get_first_in_queue
+    transaction.update_attributes pending_start_at: Time.now
+    UserMailer.notify_user_of_turn(transaction)
+
+    redirect_to root_path
+  end
+
 private
   def load_queue_transaction
     @queue_transaction = QueueTransaction.find(params[:id])

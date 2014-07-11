@@ -1,17 +1,22 @@
 <table class="table table-striped">
   <thead>
-    <tr>
-      <th>User</th>
-      <th>Status</th>
-      <th>Blocking Duration</th>
+  <tr>
+    <th>User</th>
+    <th>Status</th>
+    <th>Blocking Duration</th>
   </thead>
   <tbody>
-    <% @queue.each do |row| %>
-    <tr>
-      <td><%= row.user.email %></td>
-      <td><%= row.status %> for <%= format_as_minutes(row.duration) %></td>
-      <td><%= format_as_minutes(row.blocking_duration) %></td>
-    </tr>
-    <% end %>
+  <% @queue.each do |row| %>
+      <tr>
+        <td><%= row.user.email %></td>
+        <td><%= row.status %> for <%= format_as_minutes(row.duration) %></td>
+        <% if !row.blocking_duration.nil? && row.blocking_duration > 1.5 * QueueTransaction.average_run_time  %>
+          <% queue_transaction = QueueTransaction.where(user_id: row.user.id, is_complete: false).order("waiting_start_at asc").first %>
+          <td><%= button_to("#{format_as_minutes(row.blocking_duration)} - Force Release", force_release_queue_transaction_path(queue_transaction), :method => :put, :class => "btn btn-warning") %></td>
+        <% else %>
+          <td><%= format_as_minutes(row.blocking_duration) %></td>
+        <% end %>
+      </tr>
+  <% end %>
   </tbody>
 </table>
