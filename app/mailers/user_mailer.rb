@@ -4,15 +4,16 @@ class UserMailer < ActionMailer::Base
   def notify_user_of_turn(transaction)
     user = transaction.user
     subject = "Gorgon is free! (#{Time.now.strftime("%H:%M")})"
-    mail(to: "#{user.email}", subject: subject).deliver
+    send_email(user.email, subject)
   end
 
-  def notify_hog(user, waiter)
+  def notify_hog(user)
     subject = "Are you still running Gorgon?"
-    # #{pluralize(waiter.count, 'person')}
-    if waiter.count > 0
-      subject << " - #{waiter.count}  are waiting."
-    end
-    mail(to: "#{user.email}", subject: subject).deliver
+    send_email(user.email, subject)
+  end
+
+  private
+  def send_email(address, subject)
+    mail(to: "#{address}", subject: subject).deliver
   end
 end

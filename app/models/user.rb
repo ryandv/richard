@@ -42,24 +42,13 @@ class User < ActiveRecord::Base
     User.all.map {|u| u.hashify(current_user) }
   end
 
-  def running_too_long?
-    puts "running too long"
-    puts Gorgon.running_user_id == self.id && Time.now - self.status_changed_at > 2.minutes
-    #current_user.id == Gorgon.running_user_id && current_user.running_too_long?
-    Gorgon.running_user_id == self.id && Time.now - self.status_changed_at > 2.minutes
-  end
-
   def self.runner_hogging
-    puts 'hogging'
-    UserMailer.test_email
+    transaction = QueueTransaction.get_first_in_queue
+    user = User.where(id: transaction.user_id).first
+    pending_for = Time.now - transaction.pending_start_at
 
-    user = Gorgon.running_user_id
-    if user
-      over_too_long = (Gorgon.running_user_id == self.id) && (Time.now - self.status_changed_at > 20.minutes)
-      waiters = User.where(status: WAITING).count
-      if over_too_long
-        notify_hog(user, waiters)
-      end
+    if transaction && pending_for > 60*20 && pending_for < 60*21
+      UserMailer.notify_hog(user)
     end
   end
 end
