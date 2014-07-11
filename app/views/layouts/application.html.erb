@@ -36,6 +36,7 @@
 
 
     <%= javascript_include_tag "application" %>
+    <%= javascript_include_tag "countdown" %>
 
     <script>
         (function doPoll(data) {
@@ -115,11 +116,15 @@
         <div class="span2">
           <div class="well sidebar-nav">
             <ul class="nav nav-list actions">
-              <li>
-                <%= "Estimated wait time of: #{format_as_minutes(Metrics::wait_time(current_user))} minutes" %>
+              <li style="padding-bottom: 6px; padding-left: 5px">
+                Estimated wait:
               </li>
-              <hr>
-
+              <center>
+              <script>
+                  var myCountdown1 = new Countdown({time:<%= Metrics::wait_time(current_user) %>, rangeHi:"minutes", height:70, width:135});
+              </script>
+              </center>
+              <br>
               <%= action_buttons %>
               <%= force_release_button %>
               
