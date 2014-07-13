@@ -8,8 +8,6 @@ module Metrics
 
     if queue_size == 0
       0
-    elsif queue_size == 1
-      [0,QueueTransaction.average_run_time - first_in_queue.blocking_duration].max
     else
       [0, QueueTransaction.average_run_time * QueueTransaction.number_transactions_before(queue_transaction) - first_in_queue.blocking_duration].max
     end
