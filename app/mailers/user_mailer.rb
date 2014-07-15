@@ -14,7 +14,7 @@ class UserMailer < ActionMailer::Base
 
   def notify_release(transaction)
     user = transaction.user
-    subject = "You have been force released"
+    subject = "You have been force released at #{Time.now.strftime("%H:%M")}"
     send_email(user.email, subject)
   end
 
