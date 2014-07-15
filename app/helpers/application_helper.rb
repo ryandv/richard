@@ -36,7 +36,7 @@ module ApplicationHelper
     queue_transaction = QueueTransaction.where(is_complete: false).order("waiting_start_at asc").first
       if queue_transaction && queue_transaction.blocking_duration > 1.5 * QueueTransaction.average_run_time
         button do
-          button_to("Force Release", force_release_queue_transaction_path(queue_transaction), :method => :put, :class => "btn btn-danger btn-block")
+          button_to("Force Release", force_release_queue_transaction_path(queue_transaction), :method => :put, :class => "btn btn-danger btn-block", :onclick => "return confirm('Are you sure you want to Force Release?')")
         end
     end
   end
