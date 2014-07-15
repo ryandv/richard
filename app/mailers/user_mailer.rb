@@ -12,6 +12,12 @@ class UserMailer < ActionMailer::Base
     send_email(user.email, subject)
   end
 
+  def notify_release(transaction)
+    user = transaction.user
+    subject = "You have been force released"
+    send_email(user.email, subject)
+  end
+
   private
   def send_email(address, subject)
     mail(to: "#{address}", subject: subject).deliver
