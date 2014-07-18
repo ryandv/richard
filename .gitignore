@@ -21,3 +21,4 @@
 /.ruby-gemset
 *.swp
 /.idea/*
+.DS_Store
