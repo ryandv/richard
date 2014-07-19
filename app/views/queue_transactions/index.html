@@ -1,0 +1,19 @@
+<div ng-controller="TransactionsCtrl" ng-init="init()">
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>User</th>
+            <th>Status</th>
+            <th>Blocking Duration</th>
+        </thead>
+        <tbody>
+
+        <tr ng-repeat="entry in entries">
+            <td class="share-code">{{entry.email}}</td>
+            <td class="share-name">{{entry.status}}</td>
+            <td class="share-value">${{entry.blocking}}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>

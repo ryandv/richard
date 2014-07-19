@@ -1,8 +1,59 @@
 class QueueTransactionsController < ApplicationController
+  include ActionController::Live
+
+  Mime::Type.register "text/event-stream", :stream
+
+  # def index
+  #   respond_to do |format|
+  #     format.html
+  #     format.stream {
+  #       response.headers['Content-Type'] = 'text/event-stream'
+  #       data = {'email' => 'robert@asd', 'status' => 'Running forever', 'blocking' => '12:12:12'}.to_json
+  #
+  #       begin
+  #         loop do
+  #           # Share.uncached do
+  #             response.stream.write "data: #{generate_new_values.to_json}\n\n"
+  #           # end
+  #           sleep 1.second
+  #         end
+  #       rescue IOError # Raised when browser interrupts the connection
+  #       ensure
+  #         response.stream.close # Prevents stream from being open forever
+  #       end
+  #     }
+  #   end
+  # end
 
   def index
-    @queue = QueueTransaction.where(:is_complete => false).order("waiting_start_at asc").load
+    QueueTransaction.where(:is_complete => false).order("waiting_start_at asc").load
   end
+
+  def le_update
+    response.headers['Content-Type'] = 'text/event-stream'
+    sse = Streamer::SSE.new(response.stream)
+    redis = Redis.new
+    redis.subscribe('messages.create') do |on|
+      on.message do |event, data|
+        sse.write(data, event: 'messages.create')
+      end
+    end
+    render nothing: true
+  rescue IOError
+    # Client disconnected
+  ensure
+    redis.quit
+    sse.close
+  end
+  # end
+  #
+  # def generate_new_values
+  #   transactions = QueueTransaction.where(:is_complete => false).order("waiting_start_at asc").load
+  #
+  #   transactions.map do |transaction|
+  #     {email: transaction.user.email, status: transaction.status, blocking: Time.now}
+  #   end
+  # end
 
   def create
     if QueueTransaction.where(:is_complete => false).count == 0

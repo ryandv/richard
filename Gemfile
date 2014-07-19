@@ -14,8 +14,10 @@ group :assets do
   gem 'coffee-rails', '~> 4.0.1'
   gem 'uglifier', '>= 1.0.3'
 end
+gem 'puma'
 
 gem 'jquery-rails'
 gem 'capistrano', '2.15.5'
 
 gem 'whenever'
+gem 'redis'
