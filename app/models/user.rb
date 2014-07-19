@@ -4,9 +4,6 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :omniauthable,
          :rememberable, :trackable, :validatable, :omniauth_providers => [:google_oauth2]
 
-  # Setup accessible (or protected) attributes for your model
-  # attr_accessible :email, :password, :status, :name, :avatar_url
-
   validate :validate_transition, on: :update
 
   def self.from_omniauth(auth)
