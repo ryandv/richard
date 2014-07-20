@@ -101,8 +101,4 @@ private
   def load_queue_transaction
     @queue_transaction = QueueTransaction.find(params[:id])
   end
-
-  def queue_transaction_params
-    params.require(:queue_transaction).permit(:waiting_start_at, :pending_start_at, :running_start_at, :user_id, :finished_at, :cancelled_at, :is_complete, :force_release_at)
-  end
 end
