@@ -13,11 +13,4 @@ class UsersController < ApplicationController
       format.json { render json: User.all_json(current_user).to_json }
     end
   end
-
-  private
-
-  def user_params
-    params.require(:user).permit(:email, :password, :status, :name, :avatar_url)
-  end
-
 end
