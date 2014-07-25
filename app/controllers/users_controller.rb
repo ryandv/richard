@@ -13,5 +13,4 @@ class UsersController < ApplicationController
       format.json { render json: User.all_json(current_user).to_json }
     end
   end
-
 end

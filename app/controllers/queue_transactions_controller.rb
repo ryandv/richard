@@ -1,7 +1,7 @@
 class QueueTransactionsController < ApplicationController
 
   def index
-    @queue = QueueTransaction.where(:is_complete => false).order("waiting_start_at asc").all
+    @queue = QueueTransaction.where(:is_complete => false).order("waiting_start_at asc").load
   end
 
   def create

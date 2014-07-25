@@ -1,6 +1,6 @@
 class Gorgon < ActiveRecord::Base
 
-  attr_accessible :status, :user_id
+  # attr_accessible :status, :user_id
 
   RUNNING = 0
   AVAILABLE = 1
@@ -16,7 +16,7 @@ class Gorgon < ActiveRecord::Base
   end
 
   def self.finish()
-    Gorgon.all.first.update_attributes! status: AVAILABLE, user_id: nil
+    # Gorgon.all.first.update_attributes! status: AVAILABLE, user_id: nil
   end
 
   def self.running_user_id

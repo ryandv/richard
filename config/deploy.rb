@@ -93,7 +93,7 @@ namespace :deploy do
     try_sudo "ls -1dt #{releases_path}/* | tail -n +#{count + 1} | xargs rm -rf"
   end
 
-  after "deploy:symlink", "deploy:update_crontab"
+  after "deploy:create_symlink", "deploy:update_crontab"
 
   desc "Update the crontab file"
   task :update_crontab, :roles => :db do
