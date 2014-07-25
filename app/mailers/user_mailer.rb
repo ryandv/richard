@@ -7,7 +7,8 @@ class UserMailer < ActionMailer::Base
     send_email(user.email, subject)
   end
 
-  def notify_hog(user)
+  def notify_hog(transaction)
+    user = transaction.user
     subject = "Are you still running Gorgon?"
     send_email(user.email, subject)
   end
