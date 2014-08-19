@@ -1,17 +1,2 @@
-<table class="table table-striped">
-  <thead>
-  <tr>
-    <th>User</th>
-    <th>Status</th>
-    <th>Blocking Duration</th>
-  </thead>
-  <tbody>
-  <% @queue.each do |row| %>
-      <tr>
-        <td><%= row.user.email %></td>
-        <td><%= row.status %> for <%= format_as_minutes(row.duration) %></td>
-          <td><%= format_as_minutes(row.blocking_duration) %></td>
-      </tr>
-  <% end %>
-  </tbody>
-</table>
+<div ng-view>
+</div>
