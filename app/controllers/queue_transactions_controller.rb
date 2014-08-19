@@ -4,6 +4,17 @@ class QueueTransactionsController < ApplicationController
     @queue = QueueTransaction.where(:is_complete => false).order("waiting_start_at asc").load
   end
 
+  def current
+    qt = QueueTransaction.connection.select_all("
+        select u.email
+        from queue_transactions qt
+        left join users u on qt.user_id = u.id
+        where qt.is_complete is false
+        order by qt.waiting_start_at"
+    )
+    render json: qt
+  end
+
   def create
     if QueueTransaction.where(:is_complete => false).count == 0
       now = Time.now
