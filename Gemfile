@@ -19,3 +19,5 @@ gem 'jquery-rails'
 gem 'capistrano', '2.15.5'
 
 gem 'whenever'
+
+gem 'angular-rails-templates'
