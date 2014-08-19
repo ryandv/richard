@@ -1,17 +1,12 @@
-'use strict';
+var richardApp = angular.module('richardApp', ['ngRoute', 'ngResource', 'templates']);
 
-var gorgonApp = angular.module('gorgonApp', [
-  'ngRoute',
-  'gorgonControllers',
-  'gorgonServices',
-  'gorgonFilters'
-]);
-
-gorgonApp.config(['$routeProvider',
-  function($routeProvider){
-      $routeProvider.
-          when('/', {
-            templateUrl: 'assets/index.html',
-            controllers: 'UserCtrl'
-          })
-  }]);
+richardApp.config(function($routeProvider){
+    $routeProvider.
+      when('/', {
+        templateUrl: 'transactions/index.html',
+        controller: 'transactionCtrl'
+      }).
+      otherwise({
+        redirecTo: '/'
+      })
+  });
