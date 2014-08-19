@@ -11,9 +11,10 @@ Richard::Application.routes.draw do
     end
     collection do
       get 'pending_next'
+      get 'current'
     end
   end
 
-  root :to => 'queue_transactions#index'
+  root to: 'queue_transactions#index'
   get 'users_json' => 'users#users_json'
 end
