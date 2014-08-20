@@ -12,6 +12,7 @@ Richard::Application.routes.draw do
     collection do
       get 'pending_next'
       get 'current'
+      get 'action_status'
     end
   end
 

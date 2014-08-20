@@ -15,6 +15,25 @@ class QueueTransactionsController < ApplicationController
     render json: qt
   end
 
+  def action_status
+    queue_transaction = current_user ? current_user.current_queue_transaction : nil
+    queue_size = QueueTransaction.queue_size
+
+    if queue_transaction.nil?
+        if queue_size == 0
+          render json:       'run'
+        else
+          render json: 'start_waiting'
+        end
+    elsif queue_transaction.waiting?
+      render json: 'stop_waiting'
+    elsif queue_transaction.pending?
+      render json: 'run'
+    elsif queue_transaction.running?
+      render json: 'finish'
+    end
+  end
+
   def create
     if QueueTransaction.where(:is_complete => false).count == 0
       now = Time.now

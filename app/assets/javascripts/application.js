@@ -21,4 +21,4 @@
 
 //= require app
 //= require controllers/transactions/index
-
+//= require controllers/transactions/actions

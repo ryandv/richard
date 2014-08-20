@@ -115,6 +115,7 @@
         <% if current_user %>
         <div class="span2">
           <div class="well sidebar-nav">
+            <div ng-controller="actions">
             <ul class="nav nav-list actions">
               <li style="padding-bottom: 6px; padding-left: 5px">
                 Estimated wait:
@@ -126,7 +127,9 @@
               </center>
               <br>
 
-              <div ng-if="">
+
+              <div ng-if="status == 'run'">
+                // if queue_transaction.nil?
                   // run
                   <li class="button">
                     <form action="/queue_transactions" class="button_to" method="post">
@@ -148,7 +151,8 @@
                   </li>
               </div>
 
-              <div ng-if="">
+              <div ng-if="status == 'waiting'">
+                // queue_transaction.waiting?
                   // finish
                   <li class="button">
                     <form action="/queue_transactions/180/finish" class="button_to" method="post">
@@ -161,7 +165,8 @@
                   </li>
               </div>
 
-              <div ng-if="">
+              <div ng-if="status == 'pending'">
+                // queue_transaction.pending?
                 // run
                 <li class="button">
                   <form action="/queue_transactions" class="button_to" method="post">
@@ -173,7 +178,8 @@
                 </li>
               </div>
 
-              <div ng-if="">
+              <div ng-if="status == 'running and for too long'">
+                // queue_transaction.running?
                   // force release
                   <li class="button">
                     <form action="/queue_transactions/180/force_release" class="button_to" method="post">
@@ -185,8 +191,8 @@
                     </form>
                   </li>
               </div>
-
             </ul>
+              </div>
           </div><!--/.well -->
         </div><!--/span-->
         <% end %>
