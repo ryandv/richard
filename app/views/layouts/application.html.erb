@@ -125,9 +125,67 @@
               </script>
               </center>
               <br>
-              <%= action_buttons %>
-              <%= force_release_button %>
-              
+
+              <div ng-if="">
+                  // run
+                  <li class="button">
+                    <form action="/queue_transactions" class="button_to" method="post">
+                      <div>
+                        <input class="btn btn-primary btn-block" type="submit" value="Run Gorgon" />
+                        <input name="authenticity_token" type="hidden" value="gG+aGN/1+OzKel3UyqDefG4pkUmYZfHqelH8BewkVns=" />
+                      </div>
+                    </form>
+                  </li>
+
+                  // start waiting
+                  <li class="button">
+                    <form action="/queue_transactions" class="button_to" method="post">
+                      <div>
+                        <input class="btn btn-primary btn-block" type="submit" value="Start Waiting" />
+                        <input name="authenticity_token" type="hidden" value="gG+aGN/1+OzKel3UyqDefG4pkUmYZfHqelH8BewkVns=" />
+                      </div>
+                    </form>
+                  </li>
+              </div>
+
+              <div ng-if="">
+                  // finish
+                  <li class="button">
+                    <form action="/queue_transactions/180/finish" class="button_to" method="post">
+                      <div>
+                        <input name="_method" type="hidden" value="put" />
+                        <input class="btn btn-primary btn-block" type="submit" value="Finish" />
+                        <input name="authenticity_token" type="hidden" value="gG+aGN/1+OzKel3UyqDefG4pkUmYZfHqelH8BewkVns=" />
+                      </div>
+                    </form>
+                  </li>
+              </div>
+
+              <div ng-if="">
+                // run
+                <li class="button">
+                  <form action="/queue_transactions" class="button_to" method="post">
+                    <div>
+                      <input class="btn btn-primary btn-block" type="submit" value="Run Gorgon" />
+                      <input name="authenticity_token" type="hidden" value="gG+aGN/1+OzKel3UyqDefG4pkUmYZfHqelH8BewkVns=" />
+                    </div>
+                  </form>
+                </li>
+              </div>
+
+              <div ng-if="">
+                  // force release
+                  <li class="button">
+                    <form action="/queue_transactions/180/force_release" class="button_to" method="post">
+                      <div>
+                        <input name="_method" type="hidden" value="put" />
+                        <input class="btn btn-danger btn-block" onclick="return confirm(&#39;Are you sure you want to Force Release?&#39;)" type="submit" value="Force Release" />
+                        <input name="authenticity_token" type="hidden" value="gG+aGN/1+OzKel3UyqDefG4pkUmYZfHqelH8BewkVns=" />
+                      </div>
+                    </form>
+                  </li>
+              </div>
+
             </ul>
           </div><!--/.well -->
         </div><!--/span-->
