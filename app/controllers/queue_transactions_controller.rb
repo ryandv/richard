@@ -6,7 +6,14 @@ class QueueTransactionsController < ApplicationController
 
   def current
     qt = QueueTransaction.connection.select_all("
-        select u.email
+        select u.email, qt.status,
+        case qt.status
+          when '#{QueueTransaction::RUNNING}' then round(extract(epoch from now() - qt.running_start_at)/60)
+          when '#{QueueTransaction::WAITING}' then round(extract(epoch from now() - qt.waiting_start_at)/60)
+          when '#{QueueTransaction::PENDING}' then round(extract(epoch from now() - qt.pending_start_at)/60)
+        end as duration,
+        case qt.status
+        when '#{QueueTransaction::RUNNING}' then round(extract(epoch from now() - qt.running_start_at)/60) else null end as blocking_duration
         from queue_transactions qt
         left join users u on qt.user_id = u.id
         where qt.is_complete is false
@@ -35,16 +42,17 @@ class QueueTransactionsController < ApplicationController
   end
 
   def create
-    if QueueTransaction.where(:is_complete => false).count == 0
+    if QueueTransaction.where(is_complete: false).count == 0
       now = Time.now
       QueueTransaction.create\
-        :user_id => current_user.id,
-        :waiting_start_at => now,
-        :pending_start_at => now,
-        :running_start_at => now,
-        :is_complete => false
+        user_id: current_user.id,
+        waiting_start_at: now,
+        pending_start_at: now,
+        running_start_at: now,
+        is_complete: false,
+        status: QueueTransaction::RUNNING
     else
-      QueueTransaction.create :user_id => current_user.id, :waiting_start_at => Time.now, :is_complete => false
+      QueueTransaction.create user_id: current_user.id, waiting_start_at: Time.now, is_complete: false
     end
 
     if current_user.errors.any?
@@ -56,26 +64,26 @@ class QueueTransactionsController < ApplicationController
 
   def cancel
     load_queue_transaction
-    @queue_transaction.update_attributes :cancelled_at => Time.now, :is_complete => true
+    @queue_transaction.update_attributes cancelled_at: Time.now, is_complete: true, status: QueueTransaction::CANCELLED
 
     first_in_queue = QueueTransaction.get_first_in_queue
     next_in_queue = QueueTransaction.get_next_in_queue(@queue_transaction)
     if first_in_queue == next_in_queue
-      next_in_queue.update_attributes :pending_start_at => Time.now
+      next_in_queue.update_attributes pending_start_at: Time.now, status: QueueTransaction::PENDING
       UserMailer.notify_user_of_turn(next_in_queue)
     end
 
     if current_user.errors.any?
       flash[:error] = current_user.errors.full_messages
     end
-
+#TODO - remove the redirects??
     redirect_to root_path
   end
 
   def run
     load_queue_transaction
 
-    @queue_transaction.update_attributes :running_start_at => Time.now
+    @queue_transaction.update_attributes running_start_at: Time.now, status: QueueTransaction::RUNNING
 
     if current_user.errors.any?
       flash[:error] = current_user.errors.full_messages
@@ -88,10 +96,10 @@ class QueueTransactionsController < ApplicationController
 
   def finish
     load_queue_transaction
-    @queue_transaction.update_attributes :finished_at => Time.now, :is_complete => true
+    @queue_transaction.update_attributes finished_at: Time.now, is_complete: true, status: QueueTransaction::COMPLETE
     transaction = QueueTransaction.get_first_in_queue
     if transaction
-      transaction.update_attributes :pending_start_at => Time.now
+      transaction.update_attributes pending_start_at: Time.now, status: QueueTransaction::PENDING
       UserMailer.notify_user_of_turn(transaction)
     end
 
@@ -111,16 +119,16 @@ class QueueTransactionsController < ApplicationController
       next_in_line = false
     end
 
-    render :json => {:next_in_line => next_in_line}
+    render json: {next_in_line: next_in_line}
   end
 
   def force_release
     load_queue_transaction
-    @queue_transaction.update_attributes force_release_at: Time.now, is_complete: true#, finished_at: Time.now
+    @queue_transaction.update_attributes force_release_at: Time.now, is_complete: true, status: QueueTransaction::COMPLETE
     UserMailer.notify_release(@queue_transaction)
     transaction = QueueTransaction.get_first_in_queue
     if transaction
-      transaction.update_attributes pending_start_at: Time.now
+      transaction.update_attributes pending_start_at: Time.now, status: QueueTransaction::PENDING
       UserMailer.notify_user_of_turn(transaction)
     end
 
