@@ -13,8 +13,8 @@ class QueueTransactionsController < ApplicationController
           when '#{QueueTransaction::PENDING}' then round(extract(epoch from now() - qt.pending_start_at)/60)
         end as duration,
         case qt.status
-          when '#{QueueTransaction::RUNNING}'
-            then round(extract(epoch from now() - qt.running_start_at)/60)
+          when '#{QueueTransaction::RUNNING}' then round(extract(epoch from now() - qt.pending_start_at)/60)
+          when '#{QueueTransaction::PENDING}' then round(extract(epoch from now() - qt.pending_start_at)/60)
             else null end as blocking_duration,
         qt.user_id = #{current_user.id} as current_user
         from queue_transactions qt
