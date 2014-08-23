@@ -21,5 +21,5 @@
 
 //= require app
 //= require controllers/transactions/index
-//= require controllers/transactions/actions
+//= require controllers/queueTransactionsCtrl
 //= require services/getTransactions
