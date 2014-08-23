@@ -62,8 +62,7 @@ class QueueTransactionsController < ApplicationController
     if current_user.errors.any?
       flash[:error] = current_user.errors.full_messages
     end
-
-    redirect_to root_path
+    render nothing: true
   end
 
   def cancel
@@ -80,8 +79,7 @@ class QueueTransactionsController < ApplicationController
     if current_user.errors.any?
       flash[:error] = current_user.errors.full_messages
     end
-#TODO - remove the redirects??
-    redirect_to root_path
+    render nothing: true
   end
 
   def run
