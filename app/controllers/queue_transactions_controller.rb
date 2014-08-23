@@ -56,7 +56,7 @@ class QueueTransactionsController < ApplicationController
         is_complete: false,
         status: QueueTransaction::RUNNING
     else
-      QueueTransaction.create user_id: current_user.id, waiting_start_at: Time.now, is_complete: false
+      QueueTransaction.create user_id: current_user.id, waiting_start_at: Time.now, is_complete: false, status: QueueTransaction::WAITING
     end
 
     if current_user.errors.any?
