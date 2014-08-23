@@ -9,7 +9,7 @@
   <tr ng-repeat="tx in queue_transactions ">
     <td>{{ tx.email }}</td>
     <td>{{ tx.status }} for {{ tx.duration}} minutes</td>
-    <td>{{ tx.blocking_duration }} minutes</td>
+    <td><div ng-hide="tx.blocking_duration == null">{{ tx.blocking_duration }} minutes</div></td>
   </tr>
   </tbody>
 </table>
