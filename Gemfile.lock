@@ -29,6 +29,8 @@ GEM
       railties (>= 3.1)
       sprockets
       tilt
+    angular_rails_csrf (1.0.1)
+      rails (>= 3, < 5)
     arel (4.0.2)
     bcrypt (3.1.7)
     builder (3.1.4)
@@ -158,6 +160,7 @@ PLATFORMS
 
 DEPENDENCIES
   angular-rails-templates
+  angular_rails_csrf
   capistrano (= 2.15.5)
   coffee-rails (~> 4.0.1)
   devise

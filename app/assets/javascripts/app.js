@@ -4,7 +4,8 @@ richardApp.config(function($routeProvider){
     $routeProvider.
       when('/', {
         templateUrl: 'transactions/index.html',
-        controller: 'transactionCtrl'
+//        controller: 'transactionCtrl'
+        controller: 'actions'
       }).
       otherwise({
         redirecTo: '/'

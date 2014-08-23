@@ -5,17 +5,21 @@ class QueueTransactionsController < ApplicationController
   end
 
   def current
-    qt = QueueTransaction.connection.select_all("
-        select u.email, qt.status,
+    qt = ActiveRecord::Base.connection.execute("
+        select qt.id, u.email, qt.status,
         case qt.status
           when '#{QueueTransaction::RUNNING}' then round(extract(epoch from now() - qt.running_start_at)/60)
           when '#{QueueTransaction::WAITING}' then round(extract(epoch from now() - qt.waiting_start_at)/60)
           when '#{QueueTransaction::PENDING}' then round(extract(epoch from now() - qt.pending_start_at)/60)
         end as duration,
         case qt.status
-        when '#{QueueTransaction::RUNNING}' then round(extract(epoch from now() - qt.running_start_at)/60) else null end as blocking_duration
+          when '#{QueueTransaction::RUNNING}'
+            then round(extract(epoch from now() - qt.running_start_at)/60)
+            else null end as blocking_duration,
+        qt.user_id = #{current_user.id} as current_user
         from queue_transactions qt
         left join users u on qt.user_id = u.id
+
         where qt.is_complete is false
         order by qt.waiting_start_at"
     )
@@ -90,8 +94,7 @@ class QueueTransactionsController < ApplicationController
     else
       Gorgon.run(current_user.id)
     end
-
-    redirect_to root_path
+    render nothing: true
   end
 
   def finish
@@ -108,8 +111,7 @@ class QueueTransactionsController < ApplicationController
     else
       Gorgon.finish
     end
-
-    redirect_to root_path
+    render nothing: true
   end
 
   def pending_next

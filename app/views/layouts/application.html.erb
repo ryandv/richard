@@ -48,7 +48,7 @@
                     localStorage.setItem("next_in_line", data["next_in_line"])
                 })
             .always(function () {
-                setTimeout(doPoll, 5000);
+                setTimeout(doPoll, 5000000);
             });
     })();
 
@@ -126,70 +126,31 @@
               </script>
               </center>
               <br>
+              {{ status == 'idle' }}
+              {{ status }}
+              <div ng-if="status == 'idle'">
+                    <div class="btn btn-primary btn-block" ng-click="run()">Run</div>
+                    <div class="btn btn-primary btn-block" ng-click="start_waiting()">Start Waiting</div>
+              </div>
 
-
-              <div ng-if="status == 'run'">
-                // if queue_transaction.nil?
-                  // run
-                  <li class="button">
-                    <form action="/queue_transactions" class="button_to" method="post">
-                      <div>
-                        <input class="btn btn-primary btn-block" type="submit" value="Run Gorgon" />
-                        <input name="authenticity_token" type="hidden" value="gG+aGN/1+OzKel3UyqDefG4pkUmYZfHqelH8BewkVns=" />
-                      </div>
-                    </form>
-                  </li>
-
-                  // start waiting
-                  <li class="button">
-                    <form action="/queue_transactions" class="button_to" method="post">
-                      <div>
-                        <input class="btn btn-primary btn-block" type="submit" value="Start Waiting" />
-                        <input name="authenticity_token" type="hidden" value="gG+aGN/1+OzKel3UyqDefG4pkUmYZfHqelH8BewkVns=" />
-                      </div>
-                    </form>
-                  </li>
+              <div ng-if="status == 'blocked'">
+                <div class="btn btn-primary btn-block" ng-click="start_waiting()">Start Waiting</div>
               </div>
 
               <div ng-if="status == 'waiting'">
-                // queue_transaction.waiting?
-                  // finish
-                  <li class="button">
-                    <form action="/queue_transactions/180/finish" class="button_to" method="post">
-                      <div>
-                        <input name="_method" type="hidden" value="put" />
-                        <input class="btn btn-primary btn-block" type="submit" value="Finish" />
-                        <input name="authenticity_token" type="hidden" value="gG+aGN/1+OzKel3UyqDefG4pkUmYZfHqelH8BewkVns=" />
-                      </div>
-                    </form>
-                  </li>
+                <div class="btn btn-primary btn-block" ng-click="cancel()">Stop Waiting</div>
               </div>
 
               <div ng-if="status == 'pending'">
-                // queue_transaction.pending?
-                // run
-                <li class="button">
-                  <form action="/queue_transactions" class="button_to" method="post">
-                    <div>
-                      <input class="btn btn-primary btn-block" type="submit" value="Run Gorgon" />
-                      <input name="authenticity_token" type="hidden" value="gG+aGN/1+OzKel3UyqDefG4pkUmYZfHqelH8BewkVns=" />
-                    </div>
-                  </form>
-                </li>
+                <div class="btn btn-primary btn-block" ng-click="run_after_pending(current_transaction.id)">Run</div>
+              </div>
+
+              <div ng-if="status == 'running'">
+                <div class="btn btn-primary btn-block" ng-click="finish(current_transaction.id)">Finish</div>
               </div>
 
               <div ng-if="status == 'running and for too long'">
-                // queue_transaction.running?
-                  // force release
-                  <li class="button">
-                    <form action="/queue_transactions/180/force_release" class="button_to" method="post">
-                      <div>
-                        <input name="_method" type="hidden" value="put" />
-                        <input class="btn btn-danger btn-block" onclick="return confirm(&#39;Are you sure you want to Force Release?&#39;)" type="submit" value="Force Release" />
-                        <input name="authenticity_token" type="hidden" value="gG+aGN/1+OzKel3UyqDefG4pkUmYZfHqelH8BewkVns=" />
-                      </div>
-                    </form>
-                  </li>
+                <div class="btn btn-primary btn-block" ng-click="force_release()">Run</div>
               </div>
             </ul>
               </div>
