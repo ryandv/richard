@@ -1,7 +1,45 @@
+require 'Streamer/SSE'
 class QueueTransactionsController < ApplicationController
+  include ActionController::Live
+  Mime::Type.register "text/event-stream", :stream
 
-  def index
-    @queue = QueueTransaction.where(:is_complete => false).order("waiting_start_at asc").load
+  def event
+    response.headers['Content-Type'] = 'text/event-stream'
+    sse = Streamer::SSE.new(response.stream)
+    redis = Redis.new
+    redis.subscribe('queue_transaction.create') do |on|
+      on.message do |event, data|
+        puts data.inspect
+        sse.write(data, event: 'queue_transaction.create')
+      end
+    end
+    render nothing: true
+  rescue IOError
+    # Client disconnected
+  ensure
+    redis.quit
+    sse.close
+  end
+
+  def sql
+    ActiveRecord::Base.connection.execute("
+      select qt.id, u.email, qt.status,
+      case qt.status
+        when '#{QueueTransaction::RUNNING}' then round(extract(epoch from now() - qt.running_start_at)/60)
+        when '#{QueueTransaction::WAITING}' then round(extract(epoch from now() - qt.waiting_start_at)/60)
+        when '#{QueueTransaction::PENDING}' then round(extract(epoch from now() - qt.pending_start_at)/60)
+      end as duration,
+      case qt.status
+        when '#{QueueTransaction::RUNNING}' then round(extract(epoch from now() - qt.pending_start_at)/60)
+        when '#{QueueTransaction::PENDING}' then round(extract(epoch from now() - qt.pending_start_at)/60)
+          else null end as blocking_duration,
+      qt.user_id = #{current_user.id} as current_user
+      from queue_transactions qt
+      left join users u on qt.user_id = u.id
+
+      where qt.is_complete is false
+      order by qt.waiting_start_at"
+    )
   end
 
   def current
@@ -23,29 +61,37 @@ class QueueTransactionsController < ApplicationController
         where qt.is_complete is false
         order by qt.waiting_start_at"
     )
+
     render json: qt
   end
 
-  def action_status
-    queue_transaction = current_user ? current_user.current_queue_transaction : nil
-    queue_size = QueueTransaction.queue_size
-
-    if queue_transaction.nil?
-        if queue_size == 0
-          render json:       'run'
-        else
-          render json: 'start_waiting'
-        end
-    elsif queue_transaction.waiting?
-      render json: 'stop_waiting'
-    elsif queue_transaction.pending?
-      render json: 'run'
-    elsif queue_transaction.running?
-      render json: 'finish'
-    end
+  def user
+    u = current_user
+    render json: {email: u.email}
   end
 
+  #def action_status
+  #  queue_transaction = current_user ? current_user.current_queue_transaction : nil
+  #  queue_size = QueueTransaction.queue_size
+  #
+  #  if queue_transaction.nil?
+  #      if queue_size == 0
+  #        render json:       'run'
+  #      else
+  #        render json: 'start_waiting'
+  #      end
+  #  elsif queue_transaction.waiting?
+  #    render json: 'stop_waiting'
+  #  elsif queue_transaction.pending?
+  #    render json: 'run'
+  #  elsif queue_transaction.running?
+  #    render json: 'finish'
+  #  end
+  #end
+
   def create
+    response.headers['Content-Type'] = 'text/javascript'
+
     if QueueTransaction.where(is_complete: false).count == 0
       now = Time.now
       QueueTransaction.create\
@@ -62,6 +108,7 @@ class QueueTransactionsController < ApplicationController
     if current_user.errors.any?
       flash[:error] = current_user.errors.full_messages
     end
+    $redis.publish('queue_transaction.create', sql.first.to_json)
     render nothing: true
   end
 
@@ -132,7 +179,7 @@ class QueueTransactionsController < ApplicationController
       UserMailer.notify_user_of_turn(transaction)
     end
 
-    redirect_to root_path
+    render nothing: true
   end
 
 private

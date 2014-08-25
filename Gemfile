@@ -22,3 +22,4 @@ gem 'whenever'
 
 gem 'angular-rails-templates'
 gem 'angular_rails_csrf'
+gem 'redis'

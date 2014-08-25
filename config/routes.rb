@@ -10,9 +10,11 @@ Richard::Application.routes.draw do
       put 'force_release'
     end
     collection do
+      get 'event'
       get 'pending_next'
       get 'current'
       get 'action_status'
+      get 'user'
     end
   end
 

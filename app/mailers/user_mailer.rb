@@ -2,7 +2,6 @@ class UserMailer < ActionMailer::Base
   default from: "richard@nulogy.com"
 
   def notify_user_of_turn(transaction)
-    puts "sending an email"
     user = transaction.user
     subject = "Gorgon is free! (#{Time.now.strftime("%H:%M")})"
     send_email(user.email, subject)
