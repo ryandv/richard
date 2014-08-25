@@ -18,39 +18,23 @@ richardApp.controller('queueTransactionsCtrl', ['$scope', '$http', function($sco
     $scope.user = data;
   });
 
-  var handleCallback = function(data){
-    console.log('taking out the trash');
-    $scope.status = 'idle';
-    $scope.queue_transactions = data;
-
-    $.each(data, function(key, val){
-      if(val.current_user == 't'){
-        $scope.current_transaction = val;
-        $scope.status = val.status;
-      }
-      if((val.status == 'running' || val.status == 'pending') && val.current_user == 'f'){
-        $scope.status = 'blocked';  //TODO show start waiting | might be more cases to handle;
-      }
-    });
-  };
-
   if (typeof(EventSource) !== "undefined") {
     var source = new EventSource('/queue_transactions/event');
-
     source.addEventListener('queue_transaction.create', function(event) {
-      $scope.queue_transactions = JSON.parse(event.data);
-      console.log(event.data);
+      $scope.queue_transactions = [];
+      $scope.queue_transactions.push(JSON.parse(event.data));
+      $scope.$apply();
     }, false);
 
     source.addEventListener('open', function(event) {
-      console.log('connection open');
-      console.log(event);
+//      console.log('connection open');
+//      console.log(event);
     }, false);
 
     source.addEventListener('error', function(event) {
       if (event.readyState == EventSource.CLOSED) {
         // Connection was closed.
-        console.log('connection closed');
+//        console.log('connection closed');
       }
     }, false);
   }
@@ -63,16 +47,11 @@ richardApp.controller('queueTransactionsCtrl', ['$scope', '$http', function($sco
     console.log('look how fast im going');
   };
 
-//  $scope.listen = function () {
-//    $scope.chatFeed = new EventSource('/queue_transactions/event');
-//    $scope.chatFeed.addEventListener('queue_transaction.event', $scope.updateQueueTransaction, false);
-//  };
-//  $scope.listen();
-
   $scope.run = function(){
     $http.post('/queue_transactions').success(function(){
-      $scope.queue_transactions.push({email: $scope.user.email, status: 'running', duration: 0, blocking_duration: 0});
+//      $scope.queue_transactions.push({email: $scope.user.email, status: 'running', duration: 0, blocking_duration: 0});
       $scope.status = 'running';
+      $scope.$apply();
     });
   };
 
@@ -80,6 +59,7 @@ richardApp.controller('queueTransactionsCtrl', ['$scope', '$http', function($sco
     console.log(id);
     $http.put('/queue_transactions/' + id + '/finish').success(function(){
       $scope.status = 'idle';
+      console.log($scope);
       remove_transaction(id);
     })
   };
@@ -112,7 +92,9 @@ richardApp.controller('queueTransactionsCtrl', ['$scope', '$http', function($sco
   };
 
   var remove_transaction = function(id){
+    console.log("id:" + id);
     $.each($scope.queue_transactions, function(key,val){
+      console.log(val.id);
       if(val.id == id){
         index = key;
       }
