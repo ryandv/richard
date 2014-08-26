@@ -7,10 +7,9 @@ class QueueTransactionsController < ApplicationController
     response.headers['Content-Type'] = 'text/event-stream'
     sse = Streamer::SSE.new(response.stream)
     redis = Redis.new
-    redis.subscribe('queue_transaction.create') do |on|
+    redis.subscribe('queue_transactions.update') do |on|
       on.message do |event, data|
-        puts data.inspect
-        sse.write(data, event: 'queue_transaction.create')
+        sse.write(data, event: 'queue_transactions.update')
       end
     end
     render nothing: true
@@ -21,48 +20,8 @@ class QueueTransactionsController < ApplicationController
     sse.close
   end
 
-  def sql
-    ActiveRecord::Base.connection.execute("
-      select qt.id, u.email, qt.status,
-      case qt.status
-        when '#{QueueTransaction::RUNNING}' then round(extract(epoch from now() - qt.running_start_at)/60)
-        when '#{QueueTransaction::WAITING}' then round(extract(epoch from now() - qt.waiting_start_at)/60)
-        when '#{QueueTransaction::PENDING}' then round(extract(epoch from now() - qt.pending_start_at)/60)
-      end as duration,
-      case qt.status
-        when '#{QueueTransaction::RUNNING}' then round(extract(epoch from now() - qt.pending_start_at)/60)
-        when '#{QueueTransaction::PENDING}' then round(extract(epoch from now() - qt.pending_start_at)/60)
-          else null end as blocking_duration,
-      qt.user_id = #{current_user.id} as current_user
-      from queue_transactions qt
-      left join users u on qt.user_id = u.id
-
-      where qt.is_complete is false
-      order by qt.waiting_start_at"
-    )
-  end
-
   def current
-    qt = ActiveRecord::Base.connection.execute("
-        select qt.id, u.email, qt.status,
-        case qt.status
-          when '#{QueueTransaction::RUNNING}' then round(extract(epoch from now() - qt.running_start_at)/60)
-          when '#{QueueTransaction::WAITING}' then round(extract(epoch from now() - qt.waiting_start_at)/60)
-          when '#{QueueTransaction::PENDING}' then round(extract(epoch from now() - qt.pending_start_at)/60)
-        end as duration,
-        case qt.status
-          when '#{QueueTransaction::RUNNING}' then round(extract(epoch from now() - qt.pending_start_at)/60)
-          when '#{QueueTransaction::PENDING}' then round(extract(epoch from now() - qt.pending_start_at)/60)
-            else null end as blocking_duration,
-        qt.user_id = #{current_user.id} as current_user
-        from queue_transactions qt
-        left join users u on qt.user_id = u.id
-
-        where qt.is_complete is false
-        order by qt.waiting_start_at"
-    )
-
-    render json: qt
+    render json: current_queue_transactions
   end
 
   def user
@@ -70,45 +29,24 @@ class QueueTransactionsController < ApplicationController
     render json: {email: u.email}
   end
 
-  #def action_status
-  #  queue_transaction = current_user ? current_user.current_queue_transaction : nil
-  #  queue_size = QueueTransaction.queue_size
-  #
-  #  if queue_transaction.nil?
-  #      if queue_size == 0
-  #        render json:       'run'
-  #      else
-  #        render json: 'start_waiting'
-  #      end
-  #  elsif queue_transaction.waiting?
-  #    render json: 'stop_waiting'
-  #  elsif queue_transaction.pending?
-  #    render json: 'run'
-  #  elsif queue_transaction.running?
-  #    render json: 'finish'
-  #  end
-  #end
-
   def create
     response.headers['Content-Type'] = 'text/javascript'
 
     if QueueTransaction.where(is_complete: false).count == 0
       now = Time.now
-      QueueTransaction.create\
-        user_id: current_user.id,
-        waiting_start_at: now,
-        pending_start_at: now,
-        running_start_at: now,
-        is_complete: false,
-        status: QueueTransaction::RUNNING
+      QueueTransaction.create(user_id: current_user.id,
+                              waiting_start_at: now,
+                              pending_start_at: now,
+                              running_start_at: now,
+                              is_complete: false,
+                              status: QueueTransaction::RUNNING)
     else
-      QueueTransaction.create user_id: current_user.id, waiting_start_at: Time.now, is_complete: false, status: QueueTransaction::WAITING
+      QueueTransaction.create user_id: current_user.id,
+                              waiting_start_at: Time.now,
+                              is_complete: false,
+                              status: QueueTransaction::WAITING
     end
-
-    if current_user.errors.any?
-      flash[:error] = current_user.errors.full_messages
-    end
-    $redis.publish('queue_transaction.create', sql.first.to_json)
+    push_queue_transactions_update
     render nothing: true
   end
 
@@ -122,23 +60,13 @@ class QueueTransactionsController < ApplicationController
       next_in_queue.update_attributes pending_start_at: Time.now, status: QueueTransaction::PENDING
       UserMailer.notify_user_of_turn(next_in_queue)
     end
-
-    if current_user.errors.any?
-      flash[:error] = current_user.errors.full_messages
-    end
+    push_queue_transactions_update
     render nothing: true
   end
 
   def run
     load_queue_transaction
-
     @queue_transaction.update_attributes running_start_at: Time.now, status: QueueTransaction::RUNNING
-
-    if current_user.errors.any?
-      flash[:error] = current_user.errors.full_messages
-    else
-      Gorgon.run(current_user.id)
-    end
     render nothing: true
   end
 
@@ -150,12 +78,7 @@ class QueueTransactionsController < ApplicationController
       transaction.update_attributes pending_start_at: Time.now, status: QueueTransaction::PENDING
       UserMailer.notify_user_of_turn(transaction)
     end
-
-    if current_user.errors.any?
-      flash[:error] = current_user.errors.full_messages
-    else
-      Gorgon.finish
-    end
+    push_queue_transactions_update
     render nothing: true
   end
 
@@ -178,12 +101,36 @@ class QueueTransactionsController < ApplicationController
       transaction.update_attributes pending_start_at: Time.now, status: QueueTransaction::PENDING
       UserMailer.notify_user_of_turn(transaction)
     end
-
     render nothing: true
   end
 
 private
+  def push_queue_transactions_update
+    $redis.publish('queue_transactions.update', current_queue_transactions)
+  end
+
   def load_queue_transaction
     @queue_transaction = QueueTransaction.find(params[:id])
+  end
+
+  def current_queue_transactions
+    ActiveRecord::Base.connection.execute("
+      select qt.id, u.email, qt.status,
+      case qt.status
+        when '#{QueueTransaction::RUNNING}' then round(extract(epoch from now() - qt.running_start_at)/60)
+        when '#{QueueTransaction::WAITING}' then round(extract(epoch from now() - qt.waiting_start_at)/60)
+        when '#{QueueTransaction::PENDING}' then round(extract(epoch from now() - qt.pending_start_at)/60)
+      end as duration,
+      case qt.status
+        when '#{QueueTransaction::RUNNING}' then round(extract(epoch from now() - qt.pending_start_at)/60)
+        when '#{QueueTransaction::PENDING}' then round(extract(epoch from now() - qt.pending_start_at)/60)
+          else null end as blocking_duration,
+      qt.user_id = #{current_user.id} as current_user
+      from queue_transactions qt
+      left join users u on qt.user_id = u.id
+
+      where qt.is_complete is false
+      order by qt.waiting_start_at"
+    ).to_json
   end
 end
