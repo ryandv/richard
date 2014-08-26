@@ -20,21 +20,20 @@ richardApp.controller('queueTransactionsCtrl', ['$scope', '$http', function($sco
 
   if (typeof(EventSource) !== "undefined") {
     var source = new EventSource('/queue_transactions/event');
-    source.addEventListener('queue_transaction.create', function(event) {
-      $scope.queue_transactions = [];
-      $scope.queue_transactions.push(JSON.parse(event.data));
-      $scope.$apply();
-    }, false);
+    source.addEventListener('queue_transactions.update', function(event) {
+      console.log(JSON.parse(event.data));
 
-    source.addEventListener('open', function(event) {
-//      console.log('connection open');
-//      console.log(event);
-    }, false);
-
-    source.addEventListener('error', function(event) {
-      if (event.readyState == EventSource.CLOSED) {
-        // Connection was closed.
-//        console.log('connection closed');
+      if(event.data == '[]'){
+        console.log('nullme');
+        $scope.queue_transactions = [];
+        $scope.$apply();
+      }
+      else{
+        $scope.queue_transactions = [];
+        _.each(JSON.parse(event.data), function(a){
+          $scope.queue_transactions.push(a);
+        });
+        $scope.$apply();
       }
     }, false);
   }
@@ -49,19 +48,17 @@ richardApp.controller('queueTransactionsCtrl', ['$scope', '$http', function($sco
 
   $scope.run = function(){
     $http.post('/queue_transactions').success(function(){
-//      $scope.queue_transactions.push({email: $scope.user.email, status: 'running', duration: 0, blocking_duration: 0});
       $scope.status = 'running';
-      $scope.$apply();
     });
   };
 
   $scope.finish = function(id){
-    console.log(id);
+    console.log("id: " + id);
+    $scope.$apply();
     $http.put('/queue_transactions/' + id + '/finish').success(function(){
       $scope.status = 'idle';
-      console.log($scope);
-      remove_transaction(id);
-    })
+//      remove_transaction(id);
+    });
   };
 
   $scope.run_after_pending = function(id){
@@ -74,14 +71,13 @@ richardApp.controller('queueTransactionsCtrl', ['$scope', '$http', function($sco
   $scope.cancel = function(id){
     $http.put('/queue_transactions/' + id + '/cancel').success(function(){
       $scope.status = 'idle';
-      remove_transaction(id);
+//      remove_transaction(id);
     });
   };
 
   $scope.start_waiting = function(){
     $http.post('/queue_transactions').success(function(){
       $scope.status = 'waiting';
-      $scope.queue_transactions.push({email: $scope.user.email, status: 'running', duration: 0});
     })
   };
 
