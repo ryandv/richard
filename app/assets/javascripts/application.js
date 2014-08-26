@@ -23,3 +23,4 @@
 //= require controllers/transactions/index
 //= require controllers/queueTransactionsCtrl
 //= require services/getTransactions
+//= require underscore
