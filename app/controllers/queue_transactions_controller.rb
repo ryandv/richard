@@ -67,6 +67,7 @@ class QueueTransactionsController < ApplicationController
   def run
     load_queue_transaction
     @queue_transaction.update_attributes running_start_at: Time.now, status: QueueTransaction::RUNNING
+    push_queue_transactions_update
     render nothing: true
   end
 
@@ -101,6 +102,7 @@ class QueueTransactionsController < ApplicationController
       transaction.update_attributes pending_start_at: Time.now, status: QueueTransaction::PENDING
       UserMailer.notify_user_of_turn(transaction)
     end
+    push_queue_transactions_update
     render nothing: true
   end
 
