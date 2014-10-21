@@ -1,2 +1,78 @@
-<div ng-view>
+<div class="row-fluid" ng-controller="queueTransactionsCtrl">
+  <% if current_user %>
+      <div class="span2">
+        <div class="well sidebar-nav">
+          <div>
+            <!--<div ng-controller="queueTransactionsCtrl">-->
+            <ul class="nav nav-list actions">
+              <li style="padding-bottom: 6px; padding-left: 5px">
+                Estimated wait:
+              </li>
+              <center>
+                <script>
+                    var myCountdown1 = new Countdown({time:<%= Metrics::wait_time(current_user) %>, rangeHi: "minutes", height: 70, width: 135});
+                </script>
+              </center>
+              <br>
+
+              <div ng-if="status == 'idle'">
+                <div class="btn btn-primary btn-block" ng-click="run()">Run</div>
+                <div class="btn btn-primary btn-block" ng-click="start_waiting()">Start Waiting</div>
+              </div>
+
+              <div ng-if="status == 'blocked'">
+                <div class="btn btn-primary btn-block" ng-click="start_waiting()">Start Waiting</div>
+              </div>
+
+              <div ng-if="status == 'waiting'">
+                <div class="btn btn-primary btn-block" ng-click="cancel(current_transaction.id)">Stop Waiting</div>
+              </div>
+
+              <div ng-if="status == 'pending'">
+                <div class="btn btn-primary btn-block" ng-click="run_after_pending(current_transaction.id)">Run</div>
+                <div class="btn btn-primary btn-block" ng-click="cancel(current_transaction.id)">Cancel</div>
+              </div>
+
+              <div ng-if="status == 'running'">
+                <div class="btn btn-primary btn-block" ng-click="finish(current_transaction.id)">Finish</div>
+              </div>
+
+              <div ng-if="status == 'running and for too long'">
+                <div class="btn btn-primary btn-block" ng-click="force_release()">Run</div>
+              </div>
+            </ul>
+          </div>
+        </div>
+        <!--/.well -->
+      </div>
+      <!--/span-->
+  <% end %>
+
+  <div class="span9">
+    <%= bootstrap_flash %>
+  </div>
+
+  <div class="span9">
+    <!--
+    <% if current_user %>-->
+        <table class="table table-striped">
+          <thead>
+          <tr>
+            <th>User</th>
+            <th>Status</th>
+            <th>Blocking Duration</th>
+          </thead>
+          <tbody>
+          <tr ng-repeat="tx in queue_transactions ">
+            <td>{{ tx.email }}</td>
+            <td>{{ tx.status }} for {{ tx.duration}} minutes</td>
+            <td>
+              <div ng-hide="tx.blocking_duration == null">{{ tx.blocking_duration }} minutes</div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+        <!--
+    <% end %>-->
+  </div>
 </div>

@@ -54,11 +54,12 @@ richardApp.controller('queueTransactionsCtrl', ['$scope', '$http', function($sco
 
   $scope.finish = function(id){
     console.log("id: " + id);
-    $scope.$apply();
+
     $http.put('/queue_transactions/' + id + '/finish').success(function(){
       $scope.status = 'idle';
-//      remove_transaction(id);
+      remove_transaction(id);
     });
+//    $scope.$apply();
   };
 
   $scope.run_after_pending = function(id){
@@ -71,8 +72,9 @@ richardApp.controller('queueTransactionsCtrl', ['$scope', '$http', function($sco
   $scope.cancel = function(id){
     $http.put('/queue_transactions/' + id + '/cancel').success(function(){
       $scope.status = 'idle';
-//      remove_transaction(id);
+      remove_transaction(id);
     });
+    $scope.$apply();
   };
 
   $scope.start_waiting = function(){

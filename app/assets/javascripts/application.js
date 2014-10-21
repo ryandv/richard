@@ -17,7 +17,6 @@
 //= require angular/angular-route.js
 //= require jquery/jquery-1.10.2.js
 //= require angular-rails-templates
-//= require_tree ../templates
 
 //= require app
 //= require controllers/transactions/index
