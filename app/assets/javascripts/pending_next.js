@@ -1,4 +1,3 @@
-console.log('pending next!');
 (function doPoll(data) {
   $.get('queue_transactions/pending_next')
     .done(function (data) {
