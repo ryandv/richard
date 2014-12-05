@@ -8,11 +8,11 @@ Chef::Log.info("mkdir shared_path/config")
 run "mkdir -p #{config.shared_path}/config"
 
 Chef::Log.info("symlinking config files")
-run "sudo! ln -fs #{config.shared_path}/config/database.yml #{config.release_path}/config/database.yml"
+run "sudo ln -fs #{config.shared_path}/config/database.yml #{config.release_path}/config/database.yml"
 
-run "sudo! ln -fs #{config.shared_path}/config/google-apps.yml #{config.release_path}/config/google-apps.yml"
+run "sudo ln -fs #{config.shared_path}/config/google-apps.yml #{config.release_path}/config/google-apps.yml"
 
-run "sudo! ln -fs #{config.shared_path}/config/nginx.conf #{config.release_path}/config/nginx.conf"
+run "sudo ln -fs #{config.shared_path}/config/nginx.conf #{config.release_path}/config/nginx.conf"
 
 Chef::Log.info("create logging")
 run "mkdir -p #{config.shared_path}/log"
