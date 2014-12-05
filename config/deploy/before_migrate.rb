@@ -23,4 +23,7 @@ node[:deploy].each do |application, deploy|
   app_root = "#{deploy[:deploy_to]}/current"
   execute "chmod -R g+rw #{app_root}" do
   end
+  shared_root = "#{deploy[:deploy_to]}/shared"
+  execute "chmod -R g+rw #{shared_root}" do
+  end
 end
