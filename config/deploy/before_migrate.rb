@@ -19,25 +19,8 @@ run "mkdir -p #{config.shared_path}/log"
 run "touch #{config.shared_path}/log/production.log"
 
 
-
-
-
-
-# desc "Restart Passenger gracefully"
-# task :apprestart, :roles => :app, :except => { :no_release => true } do
-run "sudo! touch #{File.join(config.current_path,'tmp','restart.txt')}"
-
-# desc "Reload Nginx config changes"
-# task :webrestart, :roles => :web, :except => { :no_release => true } do
-run "sudo! service nginx reload"
-
-# namespace :assets do
-# task :precompile, :roles => :web, :except => { :no_release => true } do
-run %Q{cd #{config.release_path} && #{rake} RAILS_ENV=#{config.framework_env} #{asset_env} assets:precompile}
-
-# task :cleanup, :except => {:no_release => true} do
-count = fetch(:keep_releases, 5).to_i
-sudo! "ls -1dt #{releases_path}/* | tail -n +#{count + 1} | xargs rm -rf"
-
-# desc "Update the crontab file"
-run "cd #{config.release_path} && bundle exec whenever --update-crontab #{app}"
+node[:deploy].each do |application, deploy|
+  app_root = "#{deploy[:deploy_to]}/current"
+  execute "chmod -R g+rw #{app_root}" do
+  end
+end
