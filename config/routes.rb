@@ -14,6 +14,6 @@ Richard::Application.routes.draw do
     end
   end
 
-  root :to => 'queue_transactions#index'
+  root to: 'queue_transactions#index'
   get 'users_json' => 'users#users_json'
 end

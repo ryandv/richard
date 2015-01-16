@@ -2,7 +2,7 @@ class User < ActiveRecord::Base
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :omniauthable,
-         :rememberable, :trackable, :validatable, :omniauth_providers => [:google_oauth2]
+         :rememberable, :trackable, :validatable, omniauth_providers: [:google_oauth2]
 
   validate :validate_transition, on: :update
 
@@ -10,24 +10,23 @@ class User < ActiveRecord::Base
     user = User.find_by_email(auth.info.email)
     unless user
       user = User.create\
-        :name => auth.info.name,
-        :email => auth.info.email,
-        :password => Devise.friendly_token[0,20],
-        :avatar_url => auth.info.image
+        name: auth.info.name,
+        email: auth.info.email,
+        password: Devise.friendly_token[0,20],
+        avatar_url: auth.info.image
     end
     user
   end
 
   def current_queue_transaction
-    QueueTransaction.where(:user_id => id, :is_complete => false).first
+    QueueTransaction.where(user_id: id, is_complete: false).first
   end
 
   def hashify(current_user)
     {
-
-      :current_user => self.current_user?(current_user),
-      :status => self.status,
-      :email => self.email
+      current_user: self.current_user?(current_user),
+      status: self.status,
+      email: self.email
     }
   end
 
