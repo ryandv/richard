@@ -1,4 +1,5 @@
 class QueueTransactionsController < ApplicationController
+  before_filter :check_if_api_user
 
   def index
     @queue = QueueTransaction.where(is_complete: false).order("waiting_start_at asc").load
@@ -100,5 +101,11 @@ class QueueTransactionsController < ApplicationController
 private
   def load_queue_transaction
     @queue_transaction = QueueTransaction.find(params[:id])
+  end
+
+  def check_if_api_user
+    if current_user.nil? && params[:api_key] && params[:api_key].length > 0
+      current_user = User.find_by_api_key(params[:api_key])
+    end
   end
 end

@@ -15,5 +15,9 @@ Richard::Application.routes.draw do
   end
 
   root to: 'queue_transactions#index'
-  get 'users_json' => 'users#users_json'
+
+  get "users_json", to: 'users#users_json'
+
+  get "api_key", to: 'users#api_key'
+  post "reset_api_key", to: 'users#reset_api_key'
 end
