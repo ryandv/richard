@@ -21,7 +21,8 @@ private
         name: omniauth.info.name,
         email: omniauth.info.email,
         password: Devise.friendly_token[0,20],
-        avatar_url: omniauth.info.image
+        avatar_url: omniauth.info.image,
+        api_key: ApiKeyGenerator.generate
       )
     end
 

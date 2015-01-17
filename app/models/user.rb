@@ -1,7 +1,7 @@
 class User < ActiveRecord::Base
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable and :omniauthable
-  devise :database_authenticatable, :omniauthable, :rememberable, :trackable, :validatable, omniauth_providers: [:google_oauth2]
+
+  devise :database_authenticatable, :omniauthable,
+    :rememberable, :trackable, :validatable, omniauth_providers: [:google_oauth2]
 
   def current_queue_transaction
     QueueTransaction.where(user_id: id, is_complete: false).first

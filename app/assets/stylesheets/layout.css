@@ -20,8 +20,10 @@ hr {
   padding: 10px 15px 10px;
 }
 
-.api-key {
-  float: right;
+.nav-link {
   padding: 10px 15px 10px;
+}
+
+.reset-api-key {
   cursor: pointer;
 }

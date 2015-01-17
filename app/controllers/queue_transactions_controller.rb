@@ -1,6 +1,6 @@
 class QueueTransactionsController < ApplicationController
   before_action :authenticate_user!
-  before_filter :check_if_api_user
+  before_filter :authenticate_api_user!
 
   def index
     @queue = QueueTransaction.unfinished_transactions.load
@@ -42,7 +42,6 @@ class QueueTransactionsController < ApplicationController
 
   def force_release
     QueueTransactionService.force_release(load_queue_transaction)
-
     redirect_to root_path
   end
 
@@ -51,7 +50,7 @@ private
     @queue_transaction = QueueTransaction.find(params[:id])
   end
 
-  def check_if_api_user
+  def authenticate_api_user!
     if current_user.nil? && params[:api_key] && params[:api_key].length > 0
       @current_user = User.find_by_api_key(params[:api_key])
     else
@@ -59,6 +58,7 @@ private
     end
   end
 
+  # Not sure whey we're doing this #
   def validate_user
     if @current_user.errors.any?
       flash[:error] = @current_user.errors.full_messages

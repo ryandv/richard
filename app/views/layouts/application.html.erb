@@ -80,26 +80,50 @@
         // At last, if the user already denied any notification, and you
         // want to be respectful there is no need to bother him any more.
       }
-      //notifyMe();
 
+
+      // API Key Logic //
       var module = angular.module("Richard", []);
+
+      // CSRF Issue //
+      module.config(['$httpProvider', function($httpProvider) {
+        var getToken = function() {
+          // Rails 3+
+          var el = document.querySelector('meta[name="csrf-token"]');
+          if (el) {
+            el = el.getAttribute('content');
+          }
+          return el;
+        };
+
+        var updateToken = function() {
+          var headers = $httpProvider.defaults.headers.common, token = getToken();
+
+          if (token) {
+            headers['X-CSRF-TOKEN'] = getToken();
+            headers['X-Requested-With'] = 'XMLHttpRequest';
+          }
+        };
+
+        updateToken();
+      }]);
 
       module.controller("ApiKeyController", ["$scope", "$http", function ($scope, $http) {
         $scope.apiKey = "<%= current_user.try(:api_key) %>";
 
         $scope.resetApiKey = function () {
-          alert("Reset");
-        };
-
-        this.resetApiKey = function () {
-          alert("No Rest")
+          $http.post('/user/reset_api_key.json').
+            success(function(data, status, headers, config) {
+              $scope.apiKey = data.apiKey;
+            })
+            .error(function(data, status, headers, config) {
+              alert("Could not reset API Key");
+            });
         };
       }]);
-
-      angular.bootstrap();
     </script>
   </head>
-  <body>
+  <body ng-app="Richard">
 
     <div class="navbar navbar-fluid-top">
       <div class="navbar-inner">
@@ -114,16 +138,36 @@
             <ul class="nav">
               <% if logged_in? %>
                 <li class="user-info"><%= "Welcome, #{current_user.email}" %></li>
-                <li><%= link_to "Log out", destroy_user_session_path, method: :delete %></li>
-                <li ng-controller="ApiKeyController as ctrl" class="api-key">
-                  API Key: <span ng-model="apiKey"><span><span ng-click="resetApiKey()" class="icon icon-refresh reset-api-key" />
-                </li>
               <% else %>
                 <li><%= link_to "Sign in", user_omniauth_authorize_path(:google_oauth2) %></li>
               <% end %>
             </ul>
+            <ul class="nav pull-right">
+              <% if logged_in? %>
+                <li><a href="#api-config-modal" class="nav-link" data-toggle="modal">API Config <span class="icon icon-wrench" /></a></li>
+                <li><%= link_to "Log out", destroy_user_session_path, class: 'nav-link', method: :delete %></li>
+              <% end %>
+            </ul>
           </div><!--/.nav-collapse -->
         </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+    <div id="api-config-modal" class="modal hide fade" ng-controller="ApiKeyController as ctrl">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3>API Key</h3>
+      </div>
+      <div class="modal-body">
+        {{ apiKey }}
+      </div>
+      <div class="modal-footer">
+        <div class="pull-left">
+          <a ng-click="resetApiKey()" class="reset-api-key btn">
+            <span class="icon icon-refresh" />
+            Reset Key
+          </a>
+        </div>
       </div>
     </div>
 
