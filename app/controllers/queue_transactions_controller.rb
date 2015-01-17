@@ -67,7 +67,12 @@ private
       format.html { redirect_to root_url }
       format.json do
         @queue_transactions = QueueTransaction.unfinished_transactions.includes(:user)
-        render 'index'
+
+        if flash[:error]
+          render 'index', status: 422
+        else
+          render 'index'
+        end
       end
     end
   end
