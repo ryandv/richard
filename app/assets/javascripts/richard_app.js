@@ -24,6 +24,7 @@ module.config(['$httpProvider', function($httpProvider) {
   updateToken();
 }]);
 
+
 module.controller("ApiKeyController", ["$scope", "$http", function ($scope, $http) {
   $scope.apiKey = '';
 

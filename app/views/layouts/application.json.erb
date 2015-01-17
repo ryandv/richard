@@ -2,4 +2,5 @@
   'flash': <%= flash_json.html_safe %>,
   'content': <%= yield %>,
   'time': <%= Time.now.to_json.html_safe %>
+  'estimated_wait_time': <%= Metrics::wait_time(@current_user) %>
 }
