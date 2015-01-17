@@ -19,3 +19,7 @@
 //= require angular/angular-route.js
 //= require jquery/jquery-1.10.2.js
 
+//= require desktop_notification
+//= require countdown
+//= require richard_app
+

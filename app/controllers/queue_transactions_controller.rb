@@ -2,7 +2,12 @@ class QueueTransactionsController < ApplicationController
   before_filter :token_or_authenticate!
 
   def index
-    respond_with_queue
+    @queue_transactions = QueueTransaction.unfinished_transactions.includes(:user)
+
+    respond_to do |format|
+      format.html { render 'index' }
+      format.json { render 'index' }
+    end
   end
 
   def create
@@ -45,26 +50,16 @@ class QueueTransactionsController < ApplicationController
 
 private
   def respond_with_queue
-    @queue_transactions = QueueTransaction.unfinished_transactions.includes(:user)
-
     respond_to do |format|
-      format.html { render 'index' }
-      format.json { render 'index' }
+      format.html { redirect_to root_url }
+      format.json do
+        @queue_transactions = QueueTransaction.unfinished_transactions.includes(:user)
+        render 'index'
+      end
     end
   end
 
   def load_queue_transaction
-    @queue_transaction = QueueTransaction.find(params[:id])
-  end
-
-  def token_or_authenticate!
-    if params[:api_key] && params[:api_key].length > 0
-      @current_user = User.find_by_api_key(params[:api_key])
-    end
-
-    if !@current_user
-      authenticate_user!
-      @current_user = current_user
-    end
+    QueueTransaction.find(params[:id])
   end
 end

@@ -69,6 +69,5 @@ private
     end
   end
 
-
   class TransitionException < RuntimeError; end
 end
