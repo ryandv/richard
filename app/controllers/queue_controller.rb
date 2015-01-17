@@ -1,4 +1,4 @@
-class QueueTransactionsController < ApplicationController
+class QueueController < ApplicationController
   before_filter :token_or_authenticate!
 
   def index
@@ -10,7 +10,7 @@ class QueueTransactionsController < ApplicationController
     end
   end
 
-  def create
+  def enqueue
     do_transition { GorgonQueue.enqueue(@current_user) }
   end
 

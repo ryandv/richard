@@ -15,19 +15,19 @@ module ApplicationHelper
         button_name = "Start Waiting"
       end
 
-      button_path = queue_transactions_path
+      button_path = enqueue_path
 
     elsif queue_transaction.waiting?
       button_name = "Stop Waiting"
-      button_path = cancel_queue_transactions_path
+      button_path = cancel_path
 
     elsif queue_transaction.pending?
       button_name = "Run Gorgon"
-      button_path = run_queue_transactions_path
+      button_path = run_path
 
     elsif queue_transaction.running?
       button_name = "Finish"
-      button_path = finish_queue_transactions_path
+      button_path = finish_path
     end
 
     button do
@@ -40,8 +40,8 @@ module ApplicationHelper
 
     if next_user.present? && next_user != current_user
       button do
-        button_to("Force Release", force_release_queue_transaction_path(next_user), {
-          method: :put,
+        button_to("Force Release", force_release_path(next_user), {
+          method: :post,
           class: "btn btn-danger btn-block",
           onclick: "return confirm('Are you sure you want to Force Release #{next_user.name}?')"
         })
