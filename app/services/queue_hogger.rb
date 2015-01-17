@@ -2,7 +2,7 @@ module QueueHogger
   extend self
 
   def check
-    transaction = QueueTransaction.get_first_in_queue
+    transaction = GorgonQueue.next_transaction
 
     if transaction.try(:pending?) &&
         transaction.duration > 20.minutes &&

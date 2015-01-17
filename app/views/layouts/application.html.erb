@@ -99,7 +99,7 @@
               <center>
                 <script>
                     new Countdown({
-                      time: <%= Metrics::wait_time(current_user) %>,
+                      time: <%= GorgonQueue.wait_time(current_user) %>,
                       rangeHi: "minutes",
                       height:70,
                       width:135
