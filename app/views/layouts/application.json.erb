@@ -1,0 +1,5 @@
+{
+  'flash': <%= flash_json.html_safe %>,
+  'content': <%= yield %>,
+  'time': <%= Time.now.to_json.html_safe %>
+}

@@ -6,11 +6,11 @@
     <th>Blocking Duration</th>
   </thead>
   <tbody>
-  <% @queue.each do |row| %>
+  <% @queue_transactions.each do |row| %>
       <tr>
         <td><%= row.user.email %></td>
         <td><%= row.status %> for <%= format_as_minutes(row.duration) %></td>
-          <td><%= format_as_minutes(row.blocking_duration) %></td>
+        <td><%= format_as_minutes(row.blocking_duration) %></td>
       </tr>
   <% end %>
   </tbody>

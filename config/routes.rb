@@ -16,21 +16,6 @@ Richard::Application.routes.draw do
     end
   end
 
-  namespace :api do
-    resources :queue_transactions do
-      member do
-        put 'cancel'
-        put 'run'
-        put 'finish'
-        put 'force_release'
-      end
-      collection do
-        get 'pending_next'
-        put 'enqueue'
-      end
-    end
-  end
-
   get  "users", to: 'users#index'
   get  "user/api_key", to: 'users#api_key'
   post "user/reset_api_key", to: 'users#reset_api_key'

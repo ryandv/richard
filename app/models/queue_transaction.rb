@@ -45,6 +45,10 @@ class QueueTransaction < ActiveRecord::Base
     QueueTransaction.where(is_complete: false).order("waiting_start_at asc").first
   end
 
+  def self.user_enqueued?(user)
+    unfinished_transactions.where(user: user).present?
+  end
+
   def duration
     if waiting?
       Time.now - waiting_start_at

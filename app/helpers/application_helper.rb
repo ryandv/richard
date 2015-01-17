@@ -45,7 +45,11 @@ module ApplicationHelper
     !!current_user
   end
 
-  private
+  def flash_json
+    flash.to_hash.to_json
+  end
+
+private
 
   def button
     "<li class=\"button\">#{yield}</li>".html_safe

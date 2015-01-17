@@ -2,6 +2,10 @@ module QueueTransactionService
   extend self
 
   def enqueue(user)
+    if QueueTransaction.user_enqueued?(user)
+      raise TransitionException.new("You are already enqueued")
+    end
+
     if QueueTransaction.first_in_queue.nil?
       now = Time.now
 
@@ -23,7 +27,6 @@ module QueueTransactionService
 
   def run(queue_transaction)
     queue_transaction.update_attributes(running_start_at: Time.now)
-    Gorgon.run(queue_transaction.user_id)
   end
 
   def cancel(queue_transaction)
@@ -40,8 +43,6 @@ module QueueTransactionService
       finished_at: Time.now,
       is_complete: true
     )
-
-    Gorgon.finish
 
     start_next_transaction
   end
@@ -67,4 +68,7 @@ private
       UserMailer.notify_user_of_turn(next_transaction)
     end
   end
+
+
+  class TransitionException < RuntimeError; end
 end
