@@ -13,9 +13,10 @@ class QueueTransaction < ActiveRecord::Base
     RUNNING => "Running"
   }
 
+  scope :unfinished_transactions, -> { where(is_complete: false).order("waiting_start_at asc") }
 
   def self.average_run_time
-    sql =<<-SQL
+    sql = <<-SQL
       select extract(epoch from avg(finished_at - pending_start_at)) as average_run_time
       from queue_transactions
       where is_complete = true and finished_at is not null and
@@ -24,27 +25,24 @@ class QueueTransaction < ActiveRecord::Base
         from queue_transactions)
       and finished_at - pending_start_at > interval '3 minute'
     SQL
+
     QueueTransaction.find_by_sql(sql).first["average_run_time"].to_f
   end
 
-  def self.number_transactions_before(queue_transaction)
+  def self.number_transactions_before(queue_transaction = nil)
     if queue_transaction.nil?
-      QueueTransaction.where(:is_complete => false).count
+      QueueTransaction.where(is_complete: false).count
     else
-      QueueTransaction.where("id < :id and is_complete = false", {:id => queue_transaction.id}).count
+      QueueTransaction.where("id < :id and is_complete = false", {id: queue_transaction.id}).count
     end
   end
 
   def self.queue_size
-    QueueTransaction.where(:is_complete => false).count
+    QueueTransaction.where(is_complete: false).count
   end
 
-  def self.get_next_in_queue(transaction)
-    QueueTransaction.where("is_complete = false and id > :id", {:id => transaction.id}).order("waiting_start_at asc").first
-  end
-
-  def self.get_first_in_queue
-    QueueTransaction.where(:is_complete => false).order("waiting_start_at asc").first
+  def self.first_in_queue
+    QueueTransaction.where(is_complete: false).order("waiting_start_at asc").first
   end
 
   def duration
@@ -89,15 +87,4 @@ class QueueTransaction < ActiveRecord::Base
       RUNNING
     end
   end
-
-=begin
-  def validate_transition
-     retval = self.changes[:status] == [IDLE, WAITING]\
-       || ( self.changes[:status] == [WAITING, RUNNING] && Gorgon.status == Gorgon::AVAILABLE )  && self.id == User.next_user.id \
-       || self.changes[:status] == [RUNNING, IDLE] || self.changes[:status] == [WAITING, IDLE]\
-       || self.changes[:status] == [IDLE, RUNNING]
-
-    self.errors.add(:base, "Not a valid transition Mr Nixon") unless retval
-  end
-=end
 end

@@ -5,25 +5,3 @@
   To use Glyphicons sprites instead of Font Awesome, replace with "require twitter-bootstrap-static/sprites"
   =require twitter-bootstrap-static/fontawesome
   */
-
-li.status {
-  font-size: 30px;
-  font-weight: bold;
-  padding-bottom: 10px;
-}
-
-hr {
-  width: 2px
-}
-
-.status.Running {
-  color: #C7254E
-}
-
-.status.Available {
-  color: #468847
-}
-
-.user-info {
-  padding: 10px 15px 10px;
-}

@@ -2,6 +2,8 @@ Richard::Application.routes.draw do
 
   devise_for :users, controllers: { omniauth_callbacks: "omniauth_callbacks" }
 
+  root to: 'queue_transactions#index'
+
   resources :queue_transactions do
     member do
       put 'cancel'
@@ -14,10 +16,7 @@ Richard::Application.routes.draw do
     end
   end
 
-  root to: 'queue_transactions#index'
-
-  get "users_json", to: 'users#users_json'
-
-  get "api_key", to: 'users#api_key'
-  post "reset_api_key", to: 'users#reset_api_key'
+  get  "users", to: 'users#index'
+  get  "user/api_key", to: 'users#api_key'
+  post "user/reset_api_key", to: 'users#reset_api_key'
 end

@@ -18,8 +18,4 @@
 //= require angular/angular-resource.js
 //= require angular/angular-route.js
 //= require jquery/jquery-1.10.2.js
-//= require app.js
-//= require services.js
-//= require controller.js
-//= require filters.js
 

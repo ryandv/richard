@@ -39,49 +39,64 @@
     <%= javascript_include_tag "countdown" %>
 
     <script>
-        (function doPoll(data) {
+      (function doPoll(data) {
         $.get('queue_transactions/pending_next')
-            .done(function (data) {
-                    if (localStorage.getItem("next_in_line") == 'false' && data["next_in_line"] == true) {
-                        notifyMe();
-                    }
-                    localStorage.setItem("next_in_line", data["next_in_line"])
-                })
-            .always(function () {
-                setTimeout(doPoll, 5000);
-            });
-    })();
+        .done(function (data) {
+          if (localStorage.getItem("next_in_line") == 'false' && data["next_in_line"] == true) {
+            notifyMe();
+          }
+          localStorage.setItem("next_in_line", data["next_in_line"])
+        })
+        .always(function () {
+          setTimeout(doPoll, 5000);
+        });
+      })();
 
-
-    function notifyMe() {
+      function notifyMe() {
         // Let's check if the browser supports notifications
         if (!("Notification" in window)) {
-            alert("This browser does not support desktop notification");
+          alert("This browser does not support desktop notification");
         }
         // Let's check if the user is okay to get some notification
         else if (Notification.permission === "granted") {
             // If it's okay let's create a notification
             var notification = new Notification("Hey there. Just swinging by to let you know gorgon is free!\nxoxo, Richard", {icon: "<%= image_path('Richard-Gere.jpg') %>"});
-        }
+          }
         // Otherwise, we need to ask the user for permission
         // Note, Chrome does not implement the permission static property
         // So we have to check for NOT 'denied' instead of 'default'
         else if (Notification.permission !== 'denied') {
-                Notification.requestPermission(function (permission) {
+          Notification.requestPermission(function (permission) {
                 // Whatever the user answers, we make sure we store the information
                 if(!('permission' in Notification)) {
-                    Notification.permission = permission;
+                  Notification.permission = permission;
                 }
                 // If the user is okay, let's create a notification
                 if (permission === "granted") {
-                    var notification = new Notification("Gorgon is free!", {icon: "<%= image_path('Richard-Gere.jpg') %>"});
+                  var notification = new Notification("Gorgon is free!", {icon: "<%= image_path('Richard-Gere.jpg') %>"});
                 }
-            });
+              });
         }
         // At last, if the user already denied any notification, and you
         // want to be respectful there is no need to bother him any more.
-    }
-//            notifyMe();
+      }
+      //notifyMe();
+
+      var module = angular.module("Richard", []);
+
+      module.controller("ApiKeyController", ["$scope", "$http", function ($scope, $http) {
+        $scope.apiKey = "<%= current_user.try(:api_key) %>";
+
+        $scope.resetApiKey = function () {
+          alert("Reset");
+        };
+
+        this.resetApiKey = function () {
+          alert("No Rest")
+        };
+      }]);
+
+      angular.bootstrap();
     </script>
   </head>
   <body>
@@ -97,16 +112,18 @@
           <a class="brand" href="#">Richard</a>
           <div class="container-fluid nav-collapse">
             <ul class="nav">
-                <% if !current_user %>
-                  <li><%= link_to "Sign in", user_omniauth_authorize_path(:google_oauth2) %></li>
-                <% else %>
-                  <li class="user-info"><%= "Welcome, #{current_user.email}" %></li>
-                  <li><%= link_to "Log out", destroy_user_session_path, method: :delete %></li>
-                <% end %>
+              <% if logged_in? %>
+                <li class="user-info"><%= "Welcome, #{current_user.email}" %></li>
+                <li><%= link_to "Log out", destroy_user_session_path, method: :delete %></li>
+                <li ng-controller="ApiKeyController as ctrl" class="api-key">
+                  API Key: <span ng-model="apiKey"><span><span ng-click="resetApiKey()" class="icon icon-refresh reset-api-key" />
+                </li>
+              <% else %>
+                <li><%= link_to "Sign in", user_omniauth_authorize_path(:google_oauth2) %></li>
+              <% end %>
             </ul>
           </div><!--/.nav-collapse -->
-          </div><!--/.nav-collapse -->
-        </div>
+        </div><!--/.nav-collapse -->
       </div>
     </div>
 
@@ -127,7 +144,7 @@
               <br>
               <%= action_buttons %>
               <%= force_release_button %>
-              
+
             </ul>
           </div><!--/.well -->
         </div><!--/span-->
@@ -137,7 +154,7 @@
           <%= bootstrap_flash %>
         </div>
         <div ng-view class="span9">
-          <% if current_user %>
+          <% if logged_in? %>
             <%= yield %>
           <% end %>
         </div>
