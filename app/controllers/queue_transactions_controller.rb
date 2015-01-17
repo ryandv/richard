@@ -1,13 +1,12 @@
 class QueueTransactionsController < ApplicationController
   before_action :authenticate_user!
-  before_filter :authenticate_api_user!
 
   def index
     @queue = QueueTransaction.unfinished_transactions.load
   end
 
   def create
-    QueueTransactionService.enqueue(@current_user)
+    QueueTransactionService.enqueue(current_user)
     validate_user
     redirect_to root_path
   end
@@ -31,7 +30,7 @@ class QueueTransactionsController < ApplicationController
   end
 
   def pending_next
-    if @current_user.current_queue_transaction.try(:status) == QueueTransaction::PENDING
+    if current_user.current_queue_transaction.try(:status) == QueueTransaction::PENDING
       next_in_line = true
     else
       next_in_line = false
@@ -50,18 +49,10 @@ private
     @queue_transaction = QueueTransaction.find(params[:id])
   end
 
-  def authenticate_api_user!
-    if current_user.nil? && params[:api_key] && params[:api_key].length > 0
-      @current_user = User.find_by_api_key(params[:api_key])
-    else
-      @current_user = current_user
-    end
-  end
-
   # Not sure whey we're doing this #
   def validate_user
-    if @current_user.errors.any?
-      flash[:error] = @current_user.errors.full_messages
+    if current_user.errors.any?
+      flash[:error] = current_user.errors.full_messages
     end
   end
 end
