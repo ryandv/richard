@@ -1,20 +1,7 @@
 class User < ActiveRecord::Base
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
-  devise :database_authenticatable, :omniauthable,
-         :rememberable, :trackable, :validatable, omniauth_providers: [:google_oauth2]
-
-  def self.from_omniauth(auth)
-    user = User.find_by_email(auth.info.email)
-    unless user
-      user = User.create\
-        name: auth.info.name,
-        email: auth.info.email,
-        password: Devise.friendly_token[0,20],
-        avatar_url: auth.info.image
-    end
-    user
-  end
+  devise :database_authenticatable, :omniauthable, :rememberable, :trackable, :validatable, omniauth_providers: [:google_oauth2]
 
   def current_queue_transaction
     QueueTransaction.where(user_id: id, is_complete: false).first
