@@ -46,7 +46,15 @@ class QueueTransaction < ActiveRecord::Base
   end
 
   def self.user_enqueued?(user)
-    unfinished_transactions.where(user: user).present?
+    next_for_user(user).present?
+  end
+
+  def self.next_for_user(user)
+    unfinished_transactions.where(user: user).first
+  end
+
+  def self.first_user_in_queue
+    first_in_queue.user
   end
 
   def duration

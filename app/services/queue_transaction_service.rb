@@ -25,11 +25,21 @@ module QueueTransactionService
     end
   end
 
-  def run(queue_transaction)
+  def run(user)
+    if QueueTransaction.first_user_in_queue != user
+      raise TransitionException.new("You are not next in line")
+    end
+
+    queue_transaction = QueueTransaction.next_for_user(user)
     queue_transaction.update_attributes(running_start_at: Time.now)
   end
 
-  def cancel(queue_transaction)
+  def cancel(user)
+    if !QueueTransaction.user_enqueued?(user)
+      raise TransitionException.new("You are not enqueued")
+    end
+
+    queue_transaction = QueueTransaction.next_for_user(user)
     queue_transaction.update_attributes(
       cancelled_at: Time.now,
       is_complete: true
@@ -38,7 +48,16 @@ module QueueTransactionService
     start_next_transaction
   end
 
-  def finish(queue_transaction)
+  def finish(user)
+    if !QueueTransaction.user_enqueued?(user)
+      raise TransitionException.new("You are not enqueued")
+    end
+
+    if QueueTransaction.first_user_in_queue != user
+      raise TransitionException.new("It is not your turn")
+    end
+
+    queue_transaction = QueueTransaction.next_for_user(user)
     queue_transaction.update_attributes(
       finished_at: Time.now,
       is_complete: true
@@ -47,13 +66,22 @@ module QueueTransactionService
     start_next_transaction
   end
 
-  def force_release(queue_transaction)
+  def force_release(user)
+    if !QueueTransaction.user_enqueued?(user)
+      raise TransitionException.new("This person is no longer enqueued")
+    end
+
+    if QueueTransaction.first_user_in_queue != user
+      raise TransitionException.new("This person is not first in the queue")
+    end
+
+    queue_transaction = QueueTransaction.next_for_user(user)
     queue_transaction.update_attributes(
       force_release_at: Time.now,
       is_complete: true
     )
 
-    UserMailer.notify_release(queue_transaction)
+    UserMailer.notify_release(user)
 
     start_next_transaction
   end
@@ -65,7 +93,7 @@ private
 
     if next_transaction
       next_transaction.update_attributes(pending_start_at: Time.now)
-      UserMailer.notify_user_of_turn(next_transaction)
+      UserMailer.notify_user_of_turn(next_transaction.user)
     end
   end
 

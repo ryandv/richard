@@ -19,27 +19,40 @@ class QueueTransactionsController < ApplicationController
   end
 
   def cancel
-    QueueTransactionService.cancel(load_queue_transaction)
+    QueueTransactionService.cancel(@current_user)
+  rescue QueueTransactionService::TransitionException => e
+    flash[:error] = e.message
+  ensure
     respond_with_queue
   end
 
   def run
-    QueueTransactionService.run(load_queue_transaction)
+    QueueTransactionService.run(@current_user)
+  rescue QueueTransactionService::TransitionException => e
+    flash[:error] = e.message
+  ensure
     respond_with_queue
   end
 
   def finish
-    QueueTransactionService.finish(load_queue_transaction)
+    QueueTransactionService.finish(@current_user)
+  rescue QueueTransactionService::TransitionException => e
+    flash[:error] = e.message
+  ensure
     respond_with_queue
   end
 
   def force_release
-    QueueTransactionService.force_release(load_queue_transaction)
+    user = User.find(params[:id])
+    QueueTransactionService.force_release(user)
+  rescue QueueTransactionService::TransitionException => e
+    flash[:error] = e.message
+  ensure
     respond_with_queue
   end
 
   def pending_next
-    if @current_user.current_queue_transaction.try(:status) == QueueTransaction::PENDING
+    if QueueTransaction.next_for_user(@current_user).try(:status) == QueueTransaction::PENDING
       next_in_line = true
     else
       next_in_line = false
@@ -57,9 +70,5 @@ private
         render 'index'
       end
     end
-  end
-
-  def load_queue_transaction
-    QueueTransaction.find(params[:id])
   end
 end

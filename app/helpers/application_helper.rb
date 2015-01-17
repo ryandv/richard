@@ -6,37 +6,46 @@ module ApplicationHelper
   end
 
   def action_buttons
-    queue_transaction = current_user ? current_user.current_queue_transaction : nil
+    queue_transaction = current_user ? QueueTransaction.next_for_user(current_user) : nil
     queue_size = QueueTransaction.queue_size
 
     if queue_transaction.nil?
-      button do
-        if queue_size == 0
-          button_to("Run Gorgon", queue_transactions_path, method: :post, class: "btn btn-primary btn-block")
-        else
-          button_to("Start Waiting", queue_transactions_path, method: :post, class: "btn btn-primary btn-block")
-        end
+      if queue_size == 0
+        button_name = "Run Gorgon"
+      else
+        button_name = "Start Waiting"
       end
+
+      button_path = queue_transactions_path
+
     elsif queue_transaction.waiting?
-      button do
-        button_to("Stop Waiting", cancel_queue_transaction_path(queue_transaction), method: :put, class: "btn btn-primary btn-block")
-      end
+      button_name = "Stop Waiting"
+      button_path = cancel_queue_transactions_path
+
     elsif queue_transaction.pending?
-      button do
-        button_to("Run Gorgon", run_queue_transaction_path(queue_transaction), method: :put, class: "btn btn-primary btn-block")
-      end
+      button_name = "Run Gorgon"
+      button_path = run_queue_transactions_path
+
     elsif queue_transaction.running?
-      button do
-        button_to("Finish", finish_queue_transaction_path(queue_transaction), method: :put, class: "btn btn-primary btn-block")
-      end
+      button_name = "Finish"
+      button_path = finish_queue_transactions_path
+    end
+
+    button do
+      button_to(button_name, button_path, method: :post, class: "btn btn-primary btn-block")
     end
   end
 
   def force_release_button
-    queue_transaction = QueueTransaction.where(is_complete: false).order("waiting_start_at asc").first
-    if queue_transaction && queue_transaction.user_id != current_user.id
+    first_user = QueueTransaction.first_in_queue.try(:user)
+
+    if first_user.present? && first_user != current_user
       button do
-        button_to("Force Release", force_release_queue_transaction_path(queue_transaction), method: :put, class: "btn btn-danger btn-block", onclick: "return confirm('Are you sure you want to Force Release?')")
+        button_to("Force Release", force_release_queue_transaction_path(first_user), {
+          method: :put,
+          class: "btn btn-danger btn-block",
+          onclick: "return confirm('Are you sure you want to Force Release #{first_user.name}?')"
+        })
       end
     end
   end

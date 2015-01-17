@@ -2,7 +2,7 @@ module Metrics
   extend self
 
   def wait_time(user)
-    queue_transaction = user.try(:current_queue_transaction)
+    queue_transaction = QueueTransaction.next_for_user(user)
     queue_size = QueueTransaction.queue_size
     next_transaction = QueueTransaction.first_in_queue
 

@@ -6,12 +6,12 @@ Richard::Application.routes.draw do
 
   resources :queue_transactions do
     member do
-      put 'cancel'
-      put 'run'
-      put 'finish'
       put 'force_release'
     end
     collection do
+      post 'cancel'
+      post 'run'
+      post 'finish'
       get 'pending_next'
     end
   end
