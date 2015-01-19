@@ -36,55 +36,10 @@
 
 
     <%= javascript_include_tag "application" %>
-    <%= javascript_include_tag "countdown" %>
 
-    <script>
-        (function doPoll(data) {
-        $.get('queue_transactions/pending_next')
-            .done(function (data) {
-                    if (localStorage.getItem("next_in_line") == 'false' && data["next_in_line"] == true) {
-                        notifyMe();
-                    }
-                    localStorage.setItem("next_in_line", data["next_in_line"])
-                })
-            .always(function () {
-                setTimeout(doPoll, 5000);
-            });
-    })();
-
-
-    function notifyMe() {
-        // Let's check if the browser supports notifications
-        if (!("Notification" in window)) {
-            alert("This browser does not support desktop notification");
-        }
-        // Let's check if the user is okay to get some notification
-        else if (Notification.permission === "granted") {
-            // If it's okay let's create a notification
-            var notification = new Notification("Hey there. Just swinging by to let you know gorgon is free!\nxoxo, Richard", {icon: "<%= image_path('Richard-Gere.jpg') %>"});
-        }
-        // Otherwise, we need to ask the user for permission
-        // Note, Chrome does not implement the permission static property
-        // So we have to check for NOT 'denied' instead of 'default'
-        else if (Notification.permission !== 'denied') {
-                Notification.requestPermission(function (permission) {
-                // Whatever the user answers, we make sure we store the information
-                if(!('permission' in Notification)) {
-                    Notification.permission = permission;
-                }
-                // If the user is okay, let's create a notification
-                if (permission === "granted") {
-                    var notification = new Notification("Gorgon is free!", {icon: "<%= image_path('Richard-Gere.jpg') %>"});
-                }
-            });
-        }
-        // At last, if the user already denied any notification, and you
-        // want to be respectful there is no need to bother him any more.
-    }
-//            notifyMe();
-    </script>
+    <%= yield :head %>
   </head>
-  <body>
+  <body ng-app="Richard">
 
     <div class="navbar navbar-fluid-top">
       <div class="navbar-inner">
@@ -97,15 +52,37 @@
           <a class="brand" href="#">Richard</a>
           <div class="container-fluid nav-collapse">
             <ul class="nav">
-                <% if !current_user %>
-                  <li><%= link_to "Sign in", user_omniauth_authorize_path(:google_oauth2) %></li>
-                <% else %>
-                  <li class="user-info"><%= "Welcome, #{current_user.email}" %></li>
-                  <li><%= link_to "Log out", destroy_user_session_path, method: :delete %></li>
-                <% end %>
+              <% if logged_in? %>
+                <li class="user-info"><%= "Welcome, #{current_user.email}" %></li>
+              <% else %>
+                <li><%= link_to "Sign in", user_omniauth_authorize_path(:google_oauth2) %></li>
+              <% end %>
+            </ul>
+            <ul class="nav pull-right">
+              <% if logged_in? %>
+                <li><a href="#api-config-modal" class="nav-link" data-toggle="modal">API Config <span class="icon icon-wrench" /></a></li>
+                <li><%= link_to "Log out", destroy_user_session_path, class: 'nav-link', method: :delete %></li>
+              <% end %>
             </ul>
           </div><!--/.nav-collapse -->
-          </div><!--/.nav-collapse -->
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+    <div id="api-config-modal" class="modal hide fade" ng-controller="ApiKeyController as ctrl">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3>API Key</h3>
+      </div>
+      <div class="modal-body">
+        {{ apiKey }}
+      </div>
+      <div class="modal-footer">
+        <div class="pull-left">
+          <a ng-click="resetApiKey()" class="reset-api-key btn">
+            <span class="icon icon-refresh" />
+            Reset Key
+          </a>
         </div>
       </div>
     </div>
@@ -120,14 +97,19 @@
                 Estimated wait:
               </li>
               <center>
-              <script>
-                  var myCountdown1 = new Countdown({time:<%= Metrics::wait_time(current_user) %>, rangeHi:"minutes", height:70, width:135});
-              </script>
+                <script>
+                    new Countdown({
+                      time: <%= GorgonQueue.wait_time(current_user) %>,
+                      rangeHi: "minutes",
+                      height:70,
+                      width:135
+                    });
+                </script>
               </center>
               <br>
               <%= action_buttons %>
               <%= force_release_button %>
-              
+
             </ul>
           </div><!--/.well -->
         </div><!--/span-->
@@ -137,14 +119,14 @@
           <%= bootstrap_flash %>
         </div>
         <div ng-view class="span9">
-          <% if current_user %>
+          <% if logged_in? %>
             <%= yield %>
           <% end %>
         </div>
       </div><!--/row-->
 
       <footer>
-        <p>&copy; Nulogy Corporation 2014</p>
+        <p>&copy; Nulogy Corporation 2015</p>
       </footer>
     </div> <!-- /container -->
   </body>

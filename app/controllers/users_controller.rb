@@ -1,16 +1,12 @@
 class UsersController < ApplicationController
+  before_action :authenticate_user!
 
-  def index
-    if current_user
-      @users = User.order("status desc")
-    else
-      redirect_to new_user_session_path
-    end
+  def reset_api_key
+    current_user.update_attributes(api_key: ApiKeyGenerator.generate)
+    render json: { apiKey: current_user.api_key }
   end
 
-  def users_json
-    respond_to do |format|
-      format.json { render json: User.all_json(current_user).to_json }
-    end
+  def api_key
+    render json: { apiKey: current_user.api_key }
   end
 end
