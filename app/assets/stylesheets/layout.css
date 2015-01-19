@@ -27,3 +27,7 @@ hr {
 .reset-api-key {
   cursor: pointer;
 }
+
+.sidebar-nav {
+  min-width: 210px;
+}
