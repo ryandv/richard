@@ -7,7 +7,7 @@ require "bundler/capistrano"
 set :user, "nulogy"
 set :password, "Nulogy4Ever"
 set :application, "richard"
-set :repository,  "readonlycode@porcupine.nu:/home/code/richard.git"
+set :repository,  "readonlycode@shell01.hq.nulogy.com:/home/code/richard.git"
 set :scm, :git
 set :scm_verbose, true
 set :deploy_to, "/data/#{application}"
