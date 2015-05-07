@@ -18,15 +18,15 @@ ssh_options[:forward_agent] = true
 ssh_options[:port] = 22
 
 task :production do
-    role :web, "192.168.50.37:22"                          # Your HTTP server, Apache/etc
-    role :app, "192.168.50.37:22"                          # This may be the same as your `Web` server
-    role :db,  "192.168.50.37:22", :primary => true        # This is where Rails migrations will run, NOT NECESSARILY where the database actually is
+    role :web, "app01.hq.nulogy.com:22"                          # Your HTTP server, Apache/etc
+    role :app, "app01.hq.nulogy.com:22"                          # This may be the same as your `Web` server
+    role :db,  "app01.hq.nulogy.com:22", :primary => true        # This is where Rails migrations will run, NOT NECESSARILY where the database actually is
 end
 
 task :qa do
-  role :web, "192.168.50.37:22"                          # Your HTTP server, Apache/etc
-  role :app, "192.168.50.37:22"                          # This may be the same as your `Web` server
-  role :db,  "192.168.50.37:22", :primary => true        # This is where Rails migrations will run, NOT NECESSARILY where the database actually is
+  role :web, "app01.hq.nulogy.com:22"                          # Your HTTP server, Apache/etc
+  role :app, "app01.hq.nulogy.com:22"                          # This may be the same as your `Web` server
+  role :db,  "app01.hq.nulogy.com:22", :primary => true        # This is where Rails migrations will run, NOT NECESSARILY where the database actually is
 
   set :application, 'qa-richard'
   set :deploy_to, "/data/#{application}"
