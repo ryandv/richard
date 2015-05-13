@@ -229,7 +229,13 @@ Devise.setup do |config|
   # up on your models and hooks.
   # config.omniauth :github, 'APP_ID', 'APP_SECRET', :scope => 'user,public_repo'
 
-  config.omniauth :google_oauth2, GOOGLE_APPS_CONFIG['id'], GOOGLE_APPS_CONFIG['secret']
+  config.omniauth :google_oauth2, GOOGLE_APPS_CONFIG['id'], GOOGLE_APPS_CONFIG['secret'], {
+      scope: 'email, profile',
+      hd: 'nulogy.com'
+  }
+  config.warden do |manager|
+    manager.failure_app = CustomFailure
+  end
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or
   # change the failure app, you can configure them inside the config.warden block.
