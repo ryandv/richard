@@ -1,7 +1,7 @@
 module GorgonQueue
   module Queries
     def transactions
-      QueueTransaction.where(is_complete: false).order("waiting_start_at asc")
+      QueueTransaction.where(finished_at: nil).order("waiting_start_at asc")
     end
 
     def users

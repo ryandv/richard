@@ -6,10 +6,8 @@ Richard::Application.routes.draw do
 
   scope :queue do
     post 'force_release/:id', to: 'queue#force_release', as: 'force_release'
-    post 'enqueue', to: 'queue#enqueue'
-    post 'cancel', to: 'queue#cancel'
-    post 'run', to: 'queue#run'
-    post 'finish', to: 'queue#finish'
+    post 'grab', to: 'queue#grab'
+    post 'release', to: 'queue#release'
     get 'pending_next', to: 'queue#pending_next'
   end
 

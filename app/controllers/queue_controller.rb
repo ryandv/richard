@@ -10,20 +10,12 @@ class QueueController < ApplicationController
     end
   end
 
-  def enqueue
-    do_transition { GorgonQueue.enqueue(@current_user) }
+  def grab
+    do_transition { GorgonQueue.grab(@current_user) }
   end
 
-  def cancel
-    do_transition { GorgonQueue.cancel(@current_user) }
-  end
-
-  def run
-    do_transition { GorgonQueue.run(@current_user) }
-  end
-
-  def finish
-    do_transition { GorgonQueue.finish(@current_user) }
+  def release
+    do_transition { GorgonQueue.release(@current_user) }
   end
 
   def force_release
