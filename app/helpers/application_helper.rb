@@ -10,24 +10,20 @@ module ApplicationHelper
 
     if queue_transaction.nil?
       if GorgonQueue.size == 0
-        button_name = "Run Gorgon"
+        button_name = "Grab Richard"
       else
         button_name = "Start Waiting"
       end
 
-      button_path = enqueue_path
+      button_path = grab_path
 
     elsif queue_transaction.waiting?
       button_name = "Stop Waiting"
-      button_path = cancel_path
-
-    elsif queue_transaction.pending?
-      button_name = "Run Gorgon"
-      button_path = run_path
+      button_path = release_path
 
     elsif queue_transaction.running?
       button_name = "Finish"
-      button_path = finish_path
+      button_path = release_path
     end
 
     button do

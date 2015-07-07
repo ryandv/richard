@@ -2,22 +2,12 @@ class QueueTransaction < ActiveRecord::Base
   belongs_to :user
 
   WAITING = "waiting"
-  PENDING = "pending"
   RUNNING = "running"
-  CANCELLED = "cancelled"
-  COMPLETE = "complete"
-
-  STATUS_MAP = {
-    WAITING => "Waiting",
-    PENDING => "Pending Start",
-    RUNNING => "Running"
-  }
+  RELEASED = "released"
 
   def duration
     if waiting?
       Time.now - waiting_start_at
-    elsif pending?
-      Time.now - pending_start_at
     elsif running?
       Time.now - running_start_at
     end
@@ -27,7 +17,7 @@ class QueueTransaction < ActiveRecord::Base
     if waiting?
       nil
     else
-      Time.now - pending_start_at
+      Time.now - running_start_at
     end
   end
 
@@ -35,24 +25,18 @@ class QueueTransaction < ActiveRecord::Base
     status == WAITING
   end
 
-  def pending?
-    status == PENDING
-  end
-
   def running?
     status == RUNNING
   end
 
-  def status
-    return CANCELLED if cancelled_at
-    return COMPLETE if finished_at
+  def released?
+    status == RELEASED
+  end
 
-    if pending_start_at.nil?
-      WAITING
-    elsif running_start_at.nil?
-      PENDING
-    elsif finished_at.nil?
-      RUNNING
-    end
+  def status
+    return RELEASED if finished_at
+    return WAITING if running_start_at.nil?
+
+    return RUNNING
   end
 end

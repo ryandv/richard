@@ -13,13 +13,15 @@ module GorgonQueue
 
     def average_run_time
       sql = <<-SQL
-        select extract(epoch from avg(finished_at - pending_start_at)) as average_run_time
-        from queue_transactions
-        where is_complete = true and finished_at is not null and
-          extract(epoch from (finished_at - pending_start_at)) < (
-            select stddev(extract (epoch from (finished_at - pending_start_at)))
-          from queue_transactions)
-        and finished_at - pending_start_at > interval '3 minute'
+        SELECT
+          extract(epoch FROM avg(finished_at - waiting_start_at)) AS average_run_time
+        FROM queue_transactions
+        WHERE
+          finished_at IS NOT NULL AND
+          extract(epoch FROM (finished_at - running_start_at)) < (
+            SELECT stddev(extract (epoch FROM (finished_at - running_start_at)))
+          FROM queue_transactions)
+        AND finished_at - running_start_at > interval '3 minute'
       SQL
 
       QueueTransaction.find_by_sql(sql).first["average_run_time"].to_f
