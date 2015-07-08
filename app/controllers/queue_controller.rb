@@ -25,14 +25,8 @@ class QueueController < ApplicationController
     end
   end
 
-  def pending_next
-    if GorgonQueue.transaction_for_user(@current_user).try(:pending?)
-      next_in_line = true
-    else
-      next_in_line = false
-    end
-
-    render json: { next_in_line: next_in_line }
+  def is_next_in_line
+    render json: { next_in_line: GorgonQueue.next_user == @current_user }
   end
 
 private

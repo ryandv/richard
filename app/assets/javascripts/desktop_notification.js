@@ -1,7 +1,7 @@
 (function doPoll(data) {
 
   var poller = function () {
-    $.get('/queue/pending_next')
+    $.get('/queue/is_next_in_line')
     .done(function (data) {
       if (localStorage.getItem("next_in_line") == 'false' && data["next_in_line"] == true) {
         notifyMe();

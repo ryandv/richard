@@ -8,7 +8,7 @@ Richard::Application.routes.draw do
     post 'force_release/:id', to: 'queue#force_release', as: 'force_release'
     post 'grab', to: 'queue#grab'
     post 'release', to: 'queue#release'
-    get 'pending_next', to: 'queue#pending_next'
+    get 'is_next_in_line', to: 'queue#is_next_in_line'
   end
 
   get  "users", to: 'users#index'
