@@ -26,7 +26,11 @@ class QueueController < ApplicationController
   end
 
   def status
-    render json: { is_next_in_line: GorgonQueue.next_user == @current_user, blocking_duration: GorgonQueue.transaction_for_user(@current_user).try(:blocking_duration) }
+    @queue_transaction = GorgonQueue.transaction_for_user(@current_user)
+
+    respond_to do |format|
+      format.json { render 'show' }
+    end
   end
 
 private
