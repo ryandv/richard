@@ -1,12 +1,12 @@
 (function doPoll(data) {
 
   var poller = function () {
-    $.get('/queue/is_next_in_line')
+    $.get('/queue/status')
     .done(function (data) {
-      if (localStorage.getItem("next_in_line") == 'false' && data["next_in_line"] == true) {
+      if (localStorage.getItem("is_next_in_line") == 'false' && data["is_next_in_line"] == true) {
         notifyMe();
       }
-      localStorage.setItem("next_in_line", data["next_in_line"])
+      localStorage.setItem("is_next_in_line", data["is_next_in_line"])
     })
   }
 
