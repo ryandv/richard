@@ -50,7 +50,7 @@ module ApplicationHelper
   end
 
   def flash_json
-    flash.now.to_hash.to_json
+    flash.to_hash.to_json
   end
 
 private
