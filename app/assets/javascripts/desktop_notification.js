@@ -11,65 +11,14 @@
 
   localStorage.setItem("lastNotificationTime", moment());
 
-  function checkIsNextInLine(statusObject) {
-    if (statusObject.isNextInLine() && statusObject.statusChange()) {
+  function checkIsNextInLine(status) {
+    if (localStorage.getItem("status") !== 'running' && status === 'running') {
       sendNotification("Hey there. Just swinging by to let you know gorgon is free!\nxoxo, Richard", {icon: "/assets/Richard-Gere.jpg"});
-      statusObject.sendNotification();
+      localStorage.setItem("lastNotificationTime", moment());
     }
+
+    localStorage.setItem("status", status);
   }
-
-  var nagTimer = (function (nagCallback) {
-    var running = false;
-    var timer = 60 * 15; // 15 minutes
-    var interval;
-
-    return {
-      start: function () {
-        running = true;
-        interval = setInterval(timer, nagCallback)
-      },
-
-      stop: function () {
-        running = false;
-        clearInterval(interval);
-      }
-    }
-  })();
-
-  var statusObject = (function (runningCallback) {
-    var lastStatus;
-    var statusChange = false;
-    var lastNotificationTime;
-
-    return {
-      updateStatus: function (newStatus) {
-        statusChange = (lastStatus == newStatus);
-        lastStatus = newStatus;
-
-        if(newStatus == "running" && statusChange) {
-          runningCallback();
-          nagtimer.start()
-        }
-
-        if(newStatus != "running") {
-          nagTimer.stop();
-        }
-      },
-
-      isNextInLine: function () {
-        return lastStatus == "running";
-      },
-
-      statusChange: function () {
-        return statusChange;
-      },
-
-      sendNotification: function () {
-
-      }
-
-    };
-  })();
 
   function checkIsHogging(status) {
     var lastNotificationTime = localStorage.getItem("lastNotificationTime");
