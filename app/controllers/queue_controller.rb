@@ -12,15 +12,13 @@ class QueueController < ApplicationController
 
   def grab
     do_transition do
-      user = find_user
-      GorgonQueue.grab(user)
+      GorgonQueue.grab(@current_user)
     end
   end
 
   def release
     do_transition do
-      user = find_user
-      GorgonQueue.release(user)
+      GorgonQueue.release(@current_user)
     end
   end
 
@@ -32,8 +30,7 @@ class QueueController < ApplicationController
   end
 
   def status
-    user = find_user
-    @queue_transaction = GorgonQueue.transaction_for_user(user)
+    @queue_transaction = GorgonQueue.transaction_for_user(@current_user)
 
     respond_to do |format|
       format.json { render 'show' }
@@ -41,14 +38,6 @@ class QueueController < ApplicationController
   end
 
 private
-
-  def find_user
-    if @current_user.integration?
-      User.find_by_email(params[:email]) or raise GorgonQueue::TransitionException.new("Invalid user #{params[:email]}")
-    else
-      @current_user
-    end
-  end
 
   def do_transition(&block)
     yield
